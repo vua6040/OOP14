@@ -17,7 +17,7 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
-import android.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.ghichu.Adapters.NotesListAdapter;
 import com.example.ghichu.Components.NotesTakerActivity;
