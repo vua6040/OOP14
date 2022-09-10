@@ -14,9 +14,9 @@
 
     <!--sidebar-->
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationview"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/navigationview"
         app:headerLayout="@layout/header_sidebar"
         app:menu="@menu/sidebar_menu"
         android:layout_gravity="start"
@@ -42,27 +42,59 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/_000">
+                android:layout_marginTop="11dp"
+                android:background="@color/_000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
                 <SearchView
                     android:id="@+id/searchView_home"
                     android:layout_width="wrap_content"
                     android:layout_height="?attr/actionBarSize"
+                    android:background="@color/ccc"
                     android:iconifiedByDefault="false"
-                    android:queryHint="Search notes..."
-                    android:translationX="-13dp"
-                    />
+                    android:queryBackground="@color/transparent"
+                    android:searchIcon="@null"
+                    android:translationX="-12dp">
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/searchView_loader"
+                        android:layout_width="200dp"
+                        android:layout_height="match_parent"
+                        app:lottie_autoPlay="true"
+                        app:lottie_scale="@integer/material_motion_duration_long_2"
+                        android:background="@color/transparent"
+                        android:backgroundTint="@color/transparent"
+                        android:src="@color/transparent"
+                        app:lottie_colorFilter="@color/transparent"
+                        app:lottie_rawRes="@raw/infinity_loader"
+                        android:translationX="-380dp"
+                        />
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/search_load"
+                        android:layout_width="400dp"
+                        android:layout_height="120dp"
+                        app:lottie_autoPlay="true"
+                        app:lottie_scale="@integer/material_motion_duration_long_2"
+                        android:background="@color/transparent"
+                        android:backgroundTint="@color/transparent"
+                        android:src="@color/transparent"
+                        app:lottie_colorFilter="@color/transparent"
+                        app:lottie_rawRes="@raw/loading"
+                        android:translationY="-30dp"
+                        android:translationX="-500dp"
+                        />
+                </SearchView>
+
 
                 <ImageButton
                     android:id="@+id/view_list"
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_view_list_24"
-                    android:translationX="2dp"
                     android:layout_gravity="end"
-                    />
+                    android:background="@color/ccc"
+                    android:src="@drawable/ic_view_list_24"
+                    android:translationX="2dp" />
             </androidx.appcompat.widget.Toolbar>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -86,20 +118,50 @@
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginBottom="40dp"
-                android:backgroundTint="@color/_000"
+                android:backgroundTint="@color/green_intro"
                 android:src="@drawable/ic_baseline_add_24"
                 />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/footer"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:background="@color/ccc"
-                android:orientation="horizontal"
-                >
+                android:background="@drawable/tools_select">
 
-            </LinearLayout>
+                <Button
+                    android:id="@+id/btn_drawing"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/drawing"
+                    android:backgroundTint="@color/black"
+                    android:onClick="drawing"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@id/footer"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBaseline_toBottomOf="parent"
+                     />
+
+                <Button
+                    android:id="@+id/btn_img"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/image"
+                    android:backgroundTint="@color/black"
+                    android:onClick="picture"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintBaseline_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/btn_drawing"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </RelativeLayout>

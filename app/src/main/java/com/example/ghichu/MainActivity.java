@@ -13,13 +13,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.ghichu.Adapters.NotesListAdapter;
+import com.example.ghichu.Components.DrawingActivity;
 import com.example.ghichu.Components.NotesTakerActivity;
 import com.example.ghichu.Database.RoomDB;
 import com.example.ghichu.Models.Notes;
@@ -28,7 +29,8 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
 
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     FloatingActionButton fab_add;
     SearchView searchView_home;
     Notes selectedNote;
+    LottieAnimationView searchView_loader,search_load;
+    Timer timer;
 
     //sidebar
     DrawerLayout drawerLayout;
@@ -51,12 +55,14 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         setContentView(R.layout.activity_main);
 
         drawerLayout = findViewById(R.id.drawerlayout);
-        navigationView = findViewById(R.id.navigationview);
+        navigationView = findViewById(R.id.navigationView);
         toolbar = findViewById(R.id.header);
+        searchView_loader = findViewById(R.id.searchView_loader);
 
         recyclerView = findViewById(R.id.recycle_home);
         fab_add = findViewById(R.id.fab_add);
         searchView_home = findViewById(R.id.searchView_home);
+        search_load = findViewById(R.id.search_load);
         database=RoomDB.getInstance(this);
 
         notes = database.mainDAO().getAll();
@@ -105,6 +111,16 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 R.string.navigation_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+    }
+
+    //Button
+    public void drawing(View view){
+        Intent clickDraw = new Intent(MainActivity.this, DrawingActivity.class);
+        startActivity(clickDraw);
+    }
+
+    public void picture(View view){
 
     }
 
@@ -195,6 +211,20 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             default:
                 return false;
         }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //animation search loader
+        searchView_loader.animate().translationX(-2600).setDuration(800).setStartDelay(1800);
+        search_load.animate().scaleY(0).setDuration(500).setStartDelay(1800);
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                searchView_home.setQueryHint("Search notes...");
+            }
+        },3000);
     }
 }

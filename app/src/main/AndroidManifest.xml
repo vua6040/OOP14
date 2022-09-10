@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.ghichu" >
+    package="com.example.ghichu">
 
     <application
         android:allowBackup="true"
@@ -12,15 +12,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:targetApi="31" >
+        tools:targetApi="31">
+        <activity
+            android:name=".Components.DrawingActivity"
+            android:exported="false" />
         <activity
             android:name=".Components.NotesTakerActivity"
-            android:theme="@style/Theme.GhiChu.NoActionBar"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.GhiChu.NoActionBar" />
         <activity
             android:name=".IntroductionActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

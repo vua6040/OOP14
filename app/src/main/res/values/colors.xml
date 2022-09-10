@@ -11,7 +11,7 @@
     <color name="blue">#88BEF5</color>
     <color name="purple">#BA53DE</color>
     <color name="green_intro">#38c172</color>
-    <color name="ccc">#ccc</color>
+    <color name="ccc">#EEEEEE</color>
     <color name="_000">#E6E5E5</color>
     <color name="grey">#242B2E</color>
 
@@ -20,4 +20,5 @@
     <color name="color3">#4CAF50</color>
     <color name="color4">#03A6A6</color>
     <color name="color5">#9C53BC</color>
+    <color name="transparent">#00FFFDFD</color>
 </resources>
