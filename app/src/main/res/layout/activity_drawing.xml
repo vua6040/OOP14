@@ -8,19 +8,6 @@
     android:orientation="vertical"
     >
 
-    <Button
-        android:id="@+id/go_home"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:background="@drawable/arrow_left"
-        android:backgroundTint="@color/black"
-        android:onClick="goBack"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/drawing"
         android:layout_width="match_parent"
@@ -31,7 +18,61 @@
         android:layout_alignParentTop="true"
         android:layout_above="@+id/constraintLayout"
         >
-        <include layout="@layout/view_display"/>
+
+        <LinearLayout
+            android:id="@+id/draw_res"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:background="@color/ccc"
+            app:layout_constraintBottom_toTopOf="@+id/include"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/go_home"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/arrow_left"
+                android:backgroundTint="@color/black"
+                android:onClick="goBack"
+                />
+
+            <Button
+                android:id="@+id/go_prev"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/back"
+                android:backgroundTint="@color/black"
+                android:onClick="goPrev"
+                android:translationX="180dp"
+                />
+            <Button
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/next"
+                android:backgroundTint="@color/black"
+                android:onClick="goNext"
+                android:translationX="180dp"
+                />
+        </LinearLayout>
+
+        <include
+            android:id="@+id/include"
+            layout="@layout/view_display"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

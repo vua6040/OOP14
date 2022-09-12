@@ -20,6 +20,10 @@ import java.util.ArrayList;
 public class Display extends View {
     public static ArrayList<Path> pathList=new ArrayList<>();
     public static ArrayList<Integer> colorList=new ArrayList<>();
+    public static ArrayList<Integer> beginPoint=new ArrayList<>();
+    public static ArrayList<Integer> endPoint=new ArrayList<>();
+
+
     public ViewGroup.LayoutParams params;
     public static int current_brush = Color.BLACK;
 
@@ -56,12 +60,17 @@ public class Display extends View {
         switch(e.getAction()){
             case MotionEvent.ACTION_DOWN:
                 path.moveTo(x,y);
+                beginPoint.add(pathList.size());
                 invalidate();
                 return true;
             case MotionEvent.ACTION_MOVE:
                 path.lineTo(x,y);
                 pathList.add(path);
                 colorList.add(current_brush);
+                invalidate();
+                return true;
+            case MotionEvent.ACTION_UP:
+                endPoint.add(pathList.size());
                 invalidate();
                 return true;
             default:
@@ -77,5 +86,7 @@ public class Display extends View {
             canvas.drawPath(pathList.get(i),paint_brush);
             invalidate();
         }
+        System.out.println("ok");
     }
+
 }

@@ -13,14 +13,14 @@
     >
 
     <!--sidebar-->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigationview"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:headerLayout="@layout/header_sidebar"
-        app:menu="@menu/sidebar_menu"
-        android:layout_gravity="start"
-        />
+<!--    <com.google.android.material.navigation.NavigationView-->
+<!--        android:id="@+id/navigationview"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:headerLayout="@layout/header_sidebar"-->
+<!--        app:menu="@menu/sidebar_menu"-->
+<!--        android:layout_gravity="start"-->
+<!--        />-->
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -68,7 +68,7 @@
                         android:src="@color/transparent"
                         app:lottie_colorFilter="@color/transparent"
                         app:lottie_rawRes="@raw/infinity_loader"
-                        android:translationX="-380dp"
+                        android:translationX="-350dp"
                         />
                     <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/search_load"
@@ -86,15 +86,15 @@
                         />
                 </SearchView>
 
-
-                <ImageButton
+                <Button
                     android:id="@+id/view_list"
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="?attr/actionBarSize"
+                    android:layout_width="40dp"
+                    android:layout_height="36dp"
                     android:layout_gravity="end"
-                    android:background="@color/ccc"
-                    android:src="@drawable/ic_view_list_24"
-                    android:translationX="2dp" />
+                    android:onClick="toggleView"
+                    android:background="@drawable/grid"
+                    android:translationX="-6dp"
+                    />
             </androidx.appcompat.widget.Toolbar>
 
             <androidx.recyclerview.widget.RecyclerView

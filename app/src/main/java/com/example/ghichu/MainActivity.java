@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -49,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     NavigationView navigationView;
     Toolbar toolbar;
 
+    Button view_list;
+
+    private static Boolean toggle=true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,9 +70,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         search_load = findViewById(R.id.search_load);
         database=RoomDB.getInstance(this);
 
+        //toggle view
+        view_list=findViewById(R.id.view_list);
+
         notes = database.mainDAO().getAll();
 
-        updateRecycler(notes);
+        updateRecycler(notes,2);
 
         //add note
         fab_add.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +132,19 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     }
 
+    //toggle view
+    public void toggleView(View view){
+        if(toggle) {
+            view_list.setBackgroundResource(R.drawable.verticals);
+            updateRecycler(notes,1);
+            toggle=false;
+        }else{
+            view_list.setBackgroundResource(R.drawable.grid);
+            updateRecycler(notes,2);
+            toggle=true;
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
@@ -149,11 +170,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
     }
 
-    private void updateRecycler(List<Notes> notes) {
+    //Grid:split two column
+    private void updateRecycler(List<Notes> notes,int numberColumn) {
         recyclerView.setHasFixedSize(true);
 
-        //Grid:split two column
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numberColumn, LinearLayoutManager.VERTICAL));
         notesListAdapter = new NotesListAdapter(MainActivity.this,notes,notesClickListener);
         recyclerView.setAdapter(notesListAdapter);
     }
