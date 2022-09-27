@@ -1,12 +1,11 @@
-package com.example.ghichu.Models;
+package com.example.ghichu.models;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;//Serialization in Java allows us to convert an Object to stream that we can send over the network or save it as file or store in DB for later usage
-import java.time.LocalDateTime;
+
 
 @Entity(tableName = "notes")
 public class Notes implements Serializable {

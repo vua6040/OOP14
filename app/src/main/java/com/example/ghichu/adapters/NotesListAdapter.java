@@ -1,4 +1,4 @@
-package com.example.ghichu.Adapters;
+package com.example.ghichu.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ghichu.Models.Notes;
+import com.example.ghichu.models.Notes;
 import com.example.ghichu.NotesClickListener;
 import com.example.ghichu.R;
 

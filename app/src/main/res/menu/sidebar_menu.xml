@@ -2,10 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
+            android:checkable="true"
             android:id="@+id/note_menu"
             android:icon="@drawable/ic_lightbulb_24"
             android:title="Note"/>
         <item
+            android:checkable="true"
             android:id="@+id/reminder_menu"
             android:icon="@drawable/ic_add_alert_24"
             android:title="Reminder"/>

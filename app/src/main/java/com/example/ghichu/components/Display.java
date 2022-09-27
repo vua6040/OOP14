@@ -1,7 +1,7 @@
-package com.example.ghichu.Components;
+package com.example.ghichu.components;
 
-import static com.example.ghichu.Components.DrawingActivity.paint_brush;
-import static com.example.ghichu.Components.DrawingActivity.path;
+import static com.example.ghichu.components.DrawingActivity.paint_brush;
+import static com.example.ghichu.components.DrawingActivity.path;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -22,6 +22,7 @@ public class Display extends View {
     public static ArrayList<Integer> colorList=new ArrayList<>();
     public static ArrayList<Integer> beginPoint=new ArrayList<>();
     public static ArrayList<Integer> endPoint=new ArrayList<>();
+    public static ArrayList<CoordinatesDraw> cd=new ArrayList<>();
 
 
     public ViewGroup.LayoutParams params;
@@ -60,11 +61,15 @@ public class Display extends View {
         switch(e.getAction()){
             case MotionEvent.ACTION_DOWN:
                 path.moveTo(x,y);
+                CoordinatesDraw cdXY_down=new CoordinatesDraw(x,y);
+                cd.add(cdXY_down);
                 beginPoint.add(pathList.size());
                 invalidate();
                 return true;
             case MotionEvent.ACTION_MOVE:
                 path.lineTo(x,y);
+                CoordinatesDraw cdXY_move=new CoordinatesDraw(x,y);
+                cd.add(cdXY_move);
                 pathList.add(path);
                 colorList.add(current_brush);
                 invalidate();
@@ -86,7 +91,6 @@ public class Display extends View {
             canvas.drawPath(pathList.get(i),paint_brush);
             invalidate();
         }
-        System.out.println("ok");
     }
 
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Components.DrawingActivity"
+    tools:context=".components.DrawingActivity"
     android:orientation="vertical"
     >
 
@@ -50,8 +50,8 @@
                 android:background="@drawable/back"
                 android:backgroundTint="@color/black"
                 android:onClick="goPrev"
-                android:translationX="180dp"
-                />
+                android:translationX="145dp" />
+
             <Button
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -60,7 +60,15 @@
                 android:background="@drawable/next"
                 android:backgroundTint="@color/black"
                 android:onClick="goNext"
-                android:translationX="180dp"
+                android:translationX="135dp"
+                />
+            <ImageButton
+                android:id="@+id/imageView_save"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                android:src="@drawable/check_24"
+                android:translationX="145dp"
                 />
         </LinearLayout>
 

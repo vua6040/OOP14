@@ -20,11 +20,11 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.ghichu.Adapters.NotesListAdapter;
-import com.example.ghichu.Components.DrawingActivity;
-import com.example.ghichu.Components.NotesTakerActivity;
-import com.example.ghichu.Database.RoomDB;
-import com.example.ghichu.Models.Notes;
+import com.example.ghichu.adapters.NotesListAdapter;
+import com.example.ghichu.components.DrawingActivity;
+import com.example.ghichu.components.NotesTakerActivity;
+import com.example.ghichu.database.RoomDB;
+import com.example.ghichu.models.Notes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     //sidebar
     DrawerLayout drawerLayout;
     NavigationView navigationView;
+    CardView cardView;
     Toolbar toolbar;
 
     Button view_list;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         setContentView(R.layout.activity_main);
 
         drawerLayout = findViewById(R.id.drawerlayout);
-        navigationView = findViewById(R.id.navigationView);
+        navigationView = findViewById(R.id.navigation_view);
         toolbar = findViewById(R.id.header);
         searchView_loader = findViewById(R.id.searchView_loader);
 
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         searchView_home = findViewById(R.id.searchView_home);
         search_load = findViewById(R.id.search_load);
         database=RoomDB.getInstance(this);
+        cardView=findViewById(R.id.cardView);
 
         //toggle view
         view_list=findViewById(R.id.view_list);
@@ -119,7 +121,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 R.string.navigation_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
+        if(cardView.isFocused()){
+            cardView.setVisibility(View.INVISIBLE);
+        }
     }
 
     //Button
@@ -129,8 +133,14 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     public void picture(View view){
-
+        int visible=cardView.getVisibility();
+        if(visible==4)
+            cardView.setVisibility(View.VISIBLE);
+        else
+            cardView.setVisibility(View.INVISIBLE);
     }
+
+
 
     //toggle view
     public void toggleView(View view){
@@ -156,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     database.mainDAO().insertNote(new_note);
                     notes.clear();
                     notes.addAll(database.mainDAO().getAll());
-                    System.out.println(notes.size());
                     notesListAdapter.notifyDataSetChanged();
                 }
             }else if(requestCode==102){
@@ -173,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     //Grid:split two column
     private void updateRecycler(List<Notes> notes,int numberColumn) {
         recyclerView.setHasFixedSize(true);
-
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numberColumn, LinearLayoutManager.VERTICAL));
         notesListAdapter = new NotesListAdapter(MainActivity.this,notes,notesClickListener);
         recyclerView.setAdapter(notesListAdapter);
@@ -224,9 +232,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 Toast.makeText(MainActivity.this,"Note Deleted",Toast.LENGTH_LONG);
                 return true;
             case R.id.clone:
+                notes.add(selectedNote);
                 database.mainDAO().insertNote(selectedNote);
-                notes.clear();
-                notes.addAll(database.mainDAO().getAll());
                 notesListAdapter.notifyDataSetChanged();
                 return true;
             default:

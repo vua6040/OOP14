@@ -2,4 +2,5 @@
 <resources>
     <item name="navigationView" type="id" />
     <item name="search_load" type="id"/>
+    <item name="model_card" type="id"/>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.ghichu.Components;
+package com.example.ghichu.components;
 
 import junit.framework.TestCase;
 

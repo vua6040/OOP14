@@ -1,4 +1,4 @@
-package com.example.ghichu.Database;
+package com.example.ghichu.database;
 
 import android.content.Context;
 
@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.example.ghichu.Models.Notes;
+import com.example.ghichu.models.Notes;
 import com.example.ghichu.dao.MainDAO;
 
 @Database(entities = {Notes.class},version = 1,exportSchema = false)
