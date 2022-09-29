@@ -1,4 +1,4 @@
-package com.example.ghichu.components;
+package com.example.ghichu;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,14 +9,14 @@ import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.example.ghichu.R;
+import com.example.ghichu.components.NotesTakerActivity;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
@@ -43,7 +43,7 @@ public class CameraPicture extends AppCompatActivity {
         previewView = findViewById(R.id.previewView);
 
         imageView_back.setOnClickListener(view -> {
-            Intent i = new Intent(CameraPicture.this,NotesTakerActivity.class);
+            Intent i = new Intent(CameraPicture.this, NotesTakerActivity.class);
             startActivity(i);
         });
 
@@ -60,32 +60,6 @@ public class CameraPicture extends AppCompatActivity {
 
         },getExecutor());
 
-        imageView_capture.setOnClickListener(view -> {
-            File photoDir = new File("mnt//sdcard//Pictures//CameraXPhoto");
-            if(!photoDir.exists()){
-                photoDir.mkdir();
-            }
-
-            Date date = new Date();
-            String timestamp = String.valueOf(date.getTime());
-            String photoFilePath = photoDir.getAbsolutePath()+"/"+timestamp+".jpg";
-
-            File photoFile=new File(photoFilePath);
-
-            imageCapture.takePicture(
-                    new ImageCapture.OutputFileOptions.Builder(photoFile).build(), getExecutor(), new ImageCapture.OnImageSavedCallback() {
-                        @Override
-                        public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                            Toast.makeText(CameraPicture.this,"Photo has been saved successful",Toast.LENGTH_LONG).show();
-                        }
-
-                        @Override
-                        public void onError(@NonNull ImageCaptureException exception) {
-                            Toast.makeText(CameraPicture.this,"Error save photo: "+exception.getMessage(),Toast.LENGTH_LONG).show();
-                        }
-                    }
-            );
-        });
     }
 
     //CAMERA
@@ -105,5 +79,42 @@ public class CameraPicture extends AppCompatActivity {
 
         cameraProvider.bindToLifecycle(this,cameraSelector ,preview,imageCapture);
 
+    }
+    
+    public void onClick(View view){
+        switch(view.getId()){
+            case R.id.imageView_capture:
+                capturePhoto();
+                break;
+            case R.id.imageView_save:
+                break;
+        }
+    }
+
+    private void capturePhoto() {
+        File photoDir = new File("mnt//sdcard//Pictures//CameraXPhoto");
+        if(!photoDir.exists()){
+            photoDir.mkdir();
+        }
+
+        Date date = new Date();
+        String timestamp = String.valueOf(date.getTime());
+        String photoFilePath = photoDir.getAbsolutePath()+"/"+timestamp+".jpg";
+
+        File photoFile=new File(photoFilePath);
+
+        imageCapture.takePicture(
+                new ImageCapture.OutputFileOptions.Builder(photoFile).build(), getExecutor(), new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        Toast.makeText(CameraPicture.this,"Photo has been saved successful",Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        Toast.makeText(CameraPicture.this,"Error save photo: "+exception.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
     }
 }

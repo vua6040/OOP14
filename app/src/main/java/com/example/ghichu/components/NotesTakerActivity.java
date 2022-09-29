@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.ghichu.CameraPicture;
 import com.example.ghichu.MainActivity;
 import com.example.ghichu.models.Notes;
 import com.example.ghichu.R;

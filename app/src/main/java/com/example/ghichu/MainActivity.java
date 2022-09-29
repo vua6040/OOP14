@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     Notes selectedNote;
     LottieAnimationView searchView_loader,search_load;
     Timer timer;
+    TextView textView_select,textView_takeaphoto;
 
     //sidebar
     DrawerLayout drawerLayout;
@@ -71,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         search_load = findViewById(R.id.search_load);
         database=RoomDB.getInstance(this);
         cardView=findViewById(R.id.cardView);
+        
+        textView_select=findViewById(R.id.textView_select);
+        textView_takeaphoto=findViewById(R.id.textView_takeaphoto);
 
         //toggle view
         view_list=findViewById(R.id.view_list);
@@ -124,6 +129,18 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         if(cardView.isFocused()){
             cardView.setVisibility(View.INVISIBLE);
         }
+        
+        //take a photo
+        textView_takeaphoto.setOnClickListener(view -> {
+            Intent i = new Intent(MainActivity.this,CameraPicture.class);
+            startActivity(i);
+        });
+        
+        //select image
+        textView_select.setOnClickListener(view->{
+            Intent i = new Intent(MainActivity.this,NotesTakerActivity.class);
+            startActivity(i);
+        });
     }
 
     //Button
