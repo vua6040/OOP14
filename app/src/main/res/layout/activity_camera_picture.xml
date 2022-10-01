@@ -37,6 +37,7 @@
         android:layout_alignParentBottom="true"
         android:background="@android:color/transparent"
         android:src="@drawable/camera"
+        android:clickable="false"
         android:translationX="1in"
         android:translationY="-10dp" />
 
