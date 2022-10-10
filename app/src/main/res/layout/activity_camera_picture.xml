@@ -38,7 +38,7 @@
         android:background="@android:color/transparent"
         android:src="@drawable/camera"
         android:clickable="false"
-        android:translationX="1in"
+        android:translationX="0.9in"
         android:translationY="-10dp" />
 
 

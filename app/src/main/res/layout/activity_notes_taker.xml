@@ -36,7 +36,7 @@
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/ic_baseline_push_pin_24"
+                    android:src="@drawable/pin_note"
                     />
                 <ImageButton
                     android:id="@+id/imageView_timer"
@@ -78,6 +78,7 @@
             android:layout_marginTop="16dp"
             android:background="@android:color/transparent"
             android:hint="Title"
+            android:text=""
             android:padding="8dp"
             android:singleLine="true"
             android:textColorHint="@color/ccc"

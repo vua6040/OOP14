@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "304063657201",
+    "project_id": "ghi-chu-8944e",
+    "storage_bucket": "ghi-chu-8944e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304063657201:android:23aeccfec88872b6a72550",
+        "android_client_info": {
+          "package_name": "com.example.ghichu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "304063657201-3tj22rd3tfbo6nta2c2opanb1q7l873t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMP9IUZ4xh78cEVUQXbyrCxALlq5Me9Lk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "304063657201-3tj22rd3tfbo6nta2c2opanb1q7l873t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

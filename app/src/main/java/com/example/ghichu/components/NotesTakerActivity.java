@@ -8,14 +8,27 @@ import androidx.cardview.widget.CardView;
 
 import com.example.ghichu.CameraPicture;
 import com.example.ghichu.MainActivity;
-import com.example.ghichu.models.Notes;
+import com.example.ghichu.api.ApiService;
+import com.example.ghichu.models.NoteModel;
 import com.example.ghichu.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,9 +41,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class NotesTakerActivity extends AppCompatActivity {
@@ -38,14 +57,19 @@ public class NotesTakerActivity extends AppCompatActivity {
     private static final int MY_REQUEST_CODE = 10;
 
     public static final String TAG=Manifest.class.getName();
-    TextView textView_select,textView_take_photo;
-    CardView cardView,model_card;
-    EditText editText_title,editText_notes;
-    ImageView imageView_back,imageView_img;
-    Uri mUri;
-    ImageButton imageView_pin,imageView_timer,imageView_save;
-    Notes notes;
-    boolean isOldNote=false;
+    private TextView textView_select,textView_take_photo;
+    private CardView cardView,model_card;
+    private EditText editText_title,editText_notes;
+    private ImageView imageView_back,imageView_img;
+    private  Uri sImage;
+    private ImageButton imageView_pin,imageView_timer,imageView_save;
+    FirebaseStorage storage;
+    NoteModel noteModel;
+
+    private boolean isOldNote=false;
+    private boolean pinned=false;
+
+    private ProgressDialog mProgressDialog;
 
     ActivityResultLauncher<Intent> mActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),(result)->{
@@ -58,7 +82,7 @@ public class NotesTakerActivity extends AppCompatActivity {
                     }
 
                     Uri uri=data.getData();
-                    mUri=uri;
+                    sImage = uri;
                     try{
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
                         imageView_img.setImageBitmap(bitmap);
@@ -86,49 +110,131 @@ public class NotesTakerActivity extends AppCompatActivity {
         textView_take_photo = findViewById(R.id.textView_take_photo);
 
         imageView_img = findViewById(R.id.imageView_img);
+        imageView_pin = findViewById(R.id.imageView_pin);
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("Please wait ...");
+
+        //FIREBASE
+        storage = FirebaseStorage.getInstance();
+
 
         //EDITTING NOTE OLD
-        notes = new Notes();
+        noteModel = new NoteModel();
         try {
-            notes = (Notes) getIntent().getSerializableExtra("noteOld");
-            if(!(notes.getTitle().length() >0) && !notes.getTitle().isEmpty()){
-                editText_title.setText(notes.getTitle());
-                editText_notes.setText(notes.getNotes());
-            }else{
-                editText_title.setText("");
-                editText_notes.setText("");
-            }
-//            imageView_img.setImageResource(notes.getImg()); still error
+            int idNote = (int) getIntent().getSerializableExtra("noteOld");
+                ApiService.apiService.getNote(idNote).enqueue(new Callback<NoteModel>() {
+                    @Override
+                    public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
+                        noteModel = response.body();
+                        editText_title.setText(noteModel.getTitle());
+                        editText_notes.setText(noteModel.getNotes());
+                        StorageReference storageReference = storage.getReferenceFromUrl("gs://ghi-chu-8944e.appspot.com/images/").child(noteModel.getImg());
+                        try {
+                            final File file = File.createTempFile("image","jpg");
+                            storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                    imageView_img.setImageBitmap(bitmap);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(NotesTakerActivity.this,"Image faild to load",Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<NoteModel> call, Throwable t) {
+                        Toast.makeText(NotesTakerActivity.this, t.toString(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
             isOldNote=true;
         }catch (Exception ex){
-            Toast.makeText(NotesTakerActivity.this, ex.toString(),
-                    Toast.LENGTH_SHORT).show();
+            Log.e("Note Old","not selected yet");
         }
+
+        //CLICK PINNED
+        imageView_pin.setOnClickListener(view -> {
+            if(pinned){
+                pinned = false;
+                Toast.makeText(NotesTakerActivity.this,"Cancel Pinned",Toast.LENGTH_LONG).show();
+            }else{
+                pinned = true;
+                Toast.makeText(NotesTakerActivity.this,"Pinned",Toast.LENGTH_LONG).show();
+            }
+        });
 
         //SAVE DATA
         imageView_save.setOnClickListener(view -> {
-            String title = editText_title.getText().toString();
-            String description = editText_notes.getText().toString();
-//                String img = imageView_img.getResources().toString();
-
-            if(description.isEmpty()||title.isEmpty()){
-                Toast.makeText(NotesTakerActivity.this,"Please add some notes!",Toast.LENGTH_LONG);
+            mProgressDialog.show();
+            String title = editText_title.getText().toString().trim();
+            String description = editText_notes.getText().toString().trim();
+            if(description.isEmpty()&&title.isEmpty()&&sImage!=null){
+                Toast.makeText(NotesTakerActivity.this,"Please add some notes!",Toast.LENGTH_LONG).show();
                 return;
             }
 
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm a");
             Date date = new Date();
 
-            if(!isOldNote) notes = new Notes();
-            notes.setTitle(title);
-            notes.setNotes(description);
-//                notes.setImg(img);
-            notes.setDate(formatter.format(date));
+            if(!isOldNote) noteModel = new NoteModel();
 
-            Intent intent = new Intent();
-            intent.putExtra("newNote",notes);
-            setResult(Activity.RESULT_OK,intent);
-            finish();
+            //handle image save in firebase
+            if(sImage!=null){
+                String rId=UUID.randomUUID().toString();
+                StorageReference reference = storage.getReference().child("images/"+rId );
+                reference.putFile(sImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if(task.isSuccessful()){
+                            Log.d("upload","success");
+                        }else{
+                            Log.e("upload","fail");
+                        }
+                    }
+                });
+                noteModel.setImg(rId);
+            }
+
+            if(pinned) noteModel.setPinned(true);
+
+            noteModel.setTitle(title);
+            noteModel.setTimeCreate(formatter.format(date));
+            noteModel.setNotes(description);
+
+            //CALL API ADD NOTE
+            ApiService.apiService.addNote(noteModel).enqueue(new Callback<NoteModel>() {
+                @Override
+                public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
+                    mProgressDialog.dismiss();
+                    Intent intent = new Intent();
+                    String jsonString="";
+
+                    GsonBuilder builder = new GsonBuilder();
+                    builder.setPrettyPrinting();
+                    Gson gson = builder.create();
+
+                    jsonString = gson.toJson(response.body());
+                    intent.putExtra("newNote",jsonString);
+                    setResult(Activity.RESULT_OK,intent);
+                    finish();
+                }
+
+                @Override
+                public void onFailure(Call<NoteModel> call, Throwable t) {
+                    mProgressDialog.dismiss();
+                    Log.e("picture",t.getMessage());
+                    Toast.makeText(NotesTakerActivity.this,t.getMessage(),Toast.LENGTH_LONG).show();
+                }
+            });
         });
 
         //BACK HOME
@@ -145,11 +251,15 @@ public class NotesTakerActivity extends AppCompatActivity {
 
     private void onClickRequestPermission() {
         if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
+            cardView.setVisibility(View.INVISIBLE);
+            model_card.setTranslationY(2000);
             openGallery();
             return;
         }
 
         if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED){
+            cardView.setVisibility(View.INVISIBLE);
+            model_card.setTranslationY(2000);
             openGallery();
         }else{
             String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -203,4 +313,5 @@ public class NotesTakerActivity extends AppCompatActivity {
         Intent i = new Intent(NotesTakerActivity.this, CameraPicture.class);
         startActivity(i);
     }
+
 }

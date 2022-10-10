@@ -48,9 +48,14 @@ public class CameraPicture extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_picture);
 
-        imageView_save = findViewById(R.id.imageView_save);
         imageView_back = findViewById(R.id.imageView_back);
+
+        imageView_save = findViewById(R.id.imageView_save);
+        imageView_save.setOnClickListener(this);
+
         imageView_capture = findViewById(R.id.imageView_capture);
+        imageView_capture.setOnClickListener(this);
+
         previewView = findViewById(R.id.previewView);
 
         imageView_back.setOnClickListener(view -> {
@@ -159,7 +164,8 @@ public class CameraPicture extends AppCompatActivity implements View.OnClickList
     }
 
     private void capturePhoto() {
-        File photoDir = new File("/mnt/sdcard/Pictures/CameraXPhoto");
+        System.out.println("clicked");
+        File photoDir = new File("C:\\Users\\ADMIN\\Documents\\PTIT\\Ghichu\\app\\src\\main\\res\\img");
         if(!photoDir.exists()){
             photoDir.mkdir();
         }

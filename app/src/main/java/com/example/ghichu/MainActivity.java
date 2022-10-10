@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -22,27 +23,32 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.ghichu.adapters.NotesListAdapter;
+import com.example.ghichu.api.ApiService;
 import com.example.ghichu.components.DrawingActivity;
 import com.example.ghichu.components.NotesTakerActivity;
-import com.example.ghichu.database.RoomDB;
-import com.example.ghichu.models.Notes;
+import com.example.ghichu.models.NoteModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
 
     RecyclerView recyclerView;
     NotesListAdapter notesListAdapter;
-    List<Notes> notes = new ArrayList<>();
-    RoomDB database;
+    private List<NoteModel> notes;
     FloatingActionButton fab_add;
     SearchView searchView_home;
-    Notes selectedNote;
+    NoteModel selectedNote;
     LottieAnimationView searchView_loader,search_load;
     Timer timer;
     TextView textView_select,textView_takeaphoto;
@@ -71,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         fab_add = findViewById(R.id.fab_add);
         searchView_home = findViewById(R.id.searchView_home);
         search_load = findViewById(R.id.search_load);
-        database=RoomDB.getInstance(this);
         cardView=findViewById(R.id.cardView);
         
         textView_select=findViewById(R.id.textView_select);
@@ -79,11 +84,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         //toggle view
         view_list=findViewById(R.id.view_list);
+        notes = new ArrayList<>();
 
-        notes = database.mainDAO().getAll();
-
-        updateRecycler(notes,2);
-
+        updateRecycler(2);
         //add note
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
             //services
             private void filter(String s) {
-                List<Notes> filteredList = new ArrayList<>();
-                for(Notes singleNote:notes){
+                List<NoteModel> filteredList = new ArrayList<>();
+                for(NoteModel singleNote:notes){
                     if(singleNote.getTitle().toLowerCase().contains(s.toLowerCase())||singleNote.getNotes().toLowerCase().contains(s.toLowerCase())){
                         filteredList.add(singleNote);
                     }
@@ -163,11 +166,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     public void toggleView(View view){
         if(toggle) {
             view_list.setBackgroundResource(R.drawable.verticals);
-            updateRecycler(notes,1);
+            updateRecycler(1);
             toggle=false;
         }else{
             view_list.setBackgroundResource(R.drawable.grid);
-            updateRecycler(notes,2);
+            updateRecycler(2);
             toggle=true;
         }
     }
@@ -179,42 +182,81 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             //WRITE_PERMISSION
             if(requestCode==101){
                 if(resultCode== Activity.RESULT_OK){
-                    Notes new_note = (Notes) data.getSerializableExtra("newNote");
-                    database.mainDAO().insertNote(new_note);
-                    notes.clear();
-                    notes.addAll(database.mainDAO().getAll());
+
+                    GsonBuilder builder = new GsonBuilder();
+                    builder.setPrettyPrinting();
+                    Gson gson = builder.create();
+
+                    NoteModel new_note = (NoteModel) (gson.fromJson((String) data.getSerializableExtra("newNote"),NoteModel.class));
+                    notes.add(new_note);
+                    Toast.makeText(MainActivity.this,"Add Note Success",Toast.LENGTH_LONG).show();
+
                     notesListAdapter.notifyDataSetChanged();
                 }
             }else if(requestCode==102){
                 if(resultCode== Activity.RESULT_OK){
-                    Notes new_note = (Notes) data.getSerializableExtra("newNote");
-                    database.mainDAO().updateNote(new_note.getId(), new_note.getTitle(),new_note.getNotes(),new_note.getImg());
-                    notes.clear();
-                    notes.addAll(database.mainDAO().getAll());
+                    NoteModel new_note = (NoteModel) data.getSerializableExtra("newNote");
+                    System.out.println(new_note.getTitle());
+                    ApiService.apiService.updateNote(new_note).enqueue(new Callback<NoteModel>() {
+                        @Override
+                        public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
+                            notes.clear();
+                            ApiService.apiService.getAllNotes().enqueue(new Callback<List<NoteModel>>() {
+                                @Override
+                                public void onResponse(Call<List<NoteModel>> call, Response<List<NoteModel>> response) {
+                                    notes.addAll(response.body());
+                                    Toast.makeText(MainActivity.this,"Unpinned",Toast.LENGTH_LONG).show();
+                                    notesListAdapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<NoteModel>> call, Throwable t) {
+                                    Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(Call<NoteModel> call, Throwable t) {
+                            Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
+                        }
+                    });
                     notesListAdapter.notifyDataSetChanged();
                 }
             }
     }
 
     //Grid:split two column
-    private void updateRecycler(List<Notes> notes,int numberColumn) {
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numberColumn, LinearLayoutManager.VERTICAL));
-        notesListAdapter = new NotesListAdapter(MainActivity.this,notes,notesClickListener);
-        recyclerView.setAdapter(notesListAdapter);
+    private void updateRecycler(int numberColumn) {
+        ApiService.apiService.getAllNotes().enqueue(new Callback<List<NoteModel>>() {
+            @Override
+            public void onResponse(Call<List<NoteModel>> call, Response<List<NoteModel>> response) {
+                notes = response.body();
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numberColumn, LinearLayoutManager.VERTICAL));
+
+                notesListAdapter = new NotesListAdapter(MainActivity.this,notes,notesClickListener);
+                recyclerView.setAdapter(notesListAdapter);
+            }
+            @Override
+            public void onFailure(Call<List<NoteModel>> call, Throwable t) {
+                Log.e("getAllNotes",t.getMessage());
+                Toast.makeText(MainActivity.this,"Error Get All Notes",Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     private final NotesClickListener notesClickListener = new NotesClickListener() {
         @Override
-        public void onClick(Notes notes) {
-                Intent intent = new Intent(MainActivity.this,NotesTakerActivity.class);
-                intent.putExtra("noteOld",notes);
+        public void onClick(NoteModel noteModal) {
+            Intent intent = new Intent(MainActivity.this,NotesTakerActivity.class);
+            intent.putExtra("noteOld", noteModal.getId());
                 startActivityIfNeeded(intent,102); //EDITING
         }
 
         @Override
-        public void onLongClick(Notes notes, CardView cardView) {
-            selectedNote = new Notes();
+        public void onLongClick(NoteModel notes, CardView cardView) {
             selectedNote = notes;
             showPopup(cardView);
         }
@@ -231,26 +273,62 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.pin:
-                if(selectedNote.isPinned()){
-                    database.mainDAO().pin(selectedNote.getId(),false);
-                    Toast.makeText(MainActivity.this,"Unpinned",Toast.LENGTH_LONG);
-                }else{
-                    database.mainDAO().pin(selectedNote.getId(),true);
-                    Toast.makeText(MainActivity.this,"Pinned",Toast.LENGTH_LONG);
-                }
-                notes.clear();
-                notes.addAll(database.mainDAO().getAll());
+                    ApiService.apiService.updatePinned(selectedNote.getId()).enqueue(new Callback<NoteModel>() {
+                        @Override
+                        public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
+                            notes.clear();
+                            ApiService.apiService.getAllNotes().enqueue(new Callback<List<NoteModel>>() {
+                                @Override
+                                public void onResponse(Call<List<NoteModel>> call, Response<List<NoteModel>> response) {
+                                    notes.addAll(response.body());
+                                    Toast.makeText(MainActivity.this,"Unpinned",Toast.LENGTH_LONG).show();
+                                    notesListAdapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<NoteModel>> call, Throwable t) {
+                                    Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(Call<NoteModel> call, Throwable t) {
+                            Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
+                        }
+                    });
                 notesListAdapter.notifyDataSetChanged();
                 return true;
             case R.id.delete:
                 notes.remove(selectedNote);
-                database.mainDAO().deleteNote(selectedNote);
+                ApiService.apiService.deleteNote(selectedNote.getId()).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Toast.makeText(MainActivity.this,"Delete Successful",Toast.LENGTH_LONG).show();
+                        notesListAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(MainActivity.this,"Delete Fail",Toast.LENGTH_LONG).show();
+                    }
+                });
                 notesListAdapter.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this,"Note Deleted",Toast.LENGTH_LONG);
                 return true;
             case R.id.clone:
                 notes.add(selectedNote);
-                database.mainDAO().insertNote(selectedNote);
+                ApiService.apiService.addNote(selectedNote).enqueue(new Callback<NoteModel>() {
+                    @Override
+                    public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
+                        Toast.makeText(MainActivity.this,"Clone success",Toast.LENGTH_LONG).show();
+                        notesListAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(Call<NoteModel> call, Throwable t) {
+                        Toast.makeText(MainActivity.this,"Clone Fail",Toast.LENGTH_LONG).show();
+                    }
+                });
                 notesListAdapter.notifyDataSetChanged();
                 return true;
             default:
