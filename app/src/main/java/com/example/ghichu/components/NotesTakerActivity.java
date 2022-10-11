@@ -177,10 +177,6 @@ public class NotesTakerActivity extends AppCompatActivity {
             mProgressDialog.show();
             String title = editText_title.getText().toString().trim();
             String description = editText_notes.getText().toString().trim();
-            if(description.isEmpty()&&title.isEmpty()&&sImage!=null){
-                Toast.makeText(NotesTakerActivity.this,"Please add some notes!",Toast.LENGTH_LONG).show();
-                return;
-            }
 
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm a");
             Date date = new Date();
@@ -211,30 +207,37 @@ public class NotesTakerActivity extends AppCompatActivity {
             noteModel.setNotes(description);
 
             //CALL API ADD NOTE
-            ApiService.apiService.addNote(noteModel).enqueue(new Callback<NoteModel>() {
-                @Override
-                public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
-                    mProgressDialog.dismiss();
-                    Intent intent = new Intent();
-                    String jsonString="";
+            if(description.isEmpty()&&title.isEmpty()&&(sImage==null || String.valueOf(sImage).isEmpty())){
+                Log.e("save","Error");
+                mProgressDialog.dismiss();
+                Toast.makeText(NotesTakerActivity.this,"Please add some notes!",Toast.LENGTH_LONG).show();
+            }else{
+                ApiService.apiService.addNote(noteModel).enqueue(new Callback<NoteModel>() {
+                    @Override
+                    public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
+                        mProgressDialog.dismiss();
+                        Intent intent = new Intent();
+                        String jsonString="";
 
-                    GsonBuilder builder = new GsonBuilder();
-                    builder.setPrettyPrinting();
-                    Gson gson = builder.create();
+                        GsonBuilder builder = new GsonBuilder();
+                        builder.setPrettyPrinting();
+                        Gson gson = builder.create();
 
-                    jsonString = gson.toJson(response.body());
-                    intent.putExtra("newNote",jsonString);
-                    setResult(Activity.RESULT_OK,intent);
-                    finish();
-                }
+                        jsonString = gson.toJson(response.body());
+                        intent.putExtra("newNote",jsonString);
+                        setResult(Activity.RESULT_OK,intent);
+                        finish();
+                    }
 
-                @Override
-                public void onFailure(Call<NoteModel> call, Throwable t) {
-                    mProgressDialog.dismiss();
-                    Log.e("picture",t.getMessage());
-                    Toast.makeText(NotesTakerActivity.this,t.getMessage(),Toast.LENGTH_LONG).show();
-                }
-            });
+                    @Override
+                    public void onFailure(Call<NoteModel> call, Throwable t) {
+                        mProgressDialog.dismiss();
+                        Log.e("picture",t.getMessage());
+                        Toast.makeText(NotesTakerActivity.this,t.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
         });
 
         //BACK HOME

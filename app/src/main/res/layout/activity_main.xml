@@ -12,6 +12,10 @@
     tools:context=".MainActivity"
     >
     <!--sidebar-->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
@@ -78,7 +82,7 @@
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
     </androidx.cardview.widget.CardView>
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white" >
@@ -123,6 +127,7 @@
                     android:iconifiedByDefault="false"
                     android:queryBackground="@color/transparent"
                     android:searchIcon="@null"
+                    android:closeIcon="@null"
                     android:translationX="-12dp">
 
                     <com.airbnb.lottie.LottieAnimationView

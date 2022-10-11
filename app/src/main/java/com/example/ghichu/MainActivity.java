@@ -1,8 +1,10 @@
 package com.example.ghichu;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +27,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.example.ghichu.adapters.NotesListAdapter;
 import com.example.ghichu.api.ApiService;
 import com.example.ghichu.components.DrawingActivity;
+import com.example.ghichu.components.NoteFragment;
 import com.example.ghichu.components.NotesTakerActivity;
 import com.example.ghichu.models.NoteModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -41,17 +44,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
+public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener,NavigationView.OnNavigationItemSelectedListener{
 
-    RecyclerView recyclerView;
-    NotesListAdapter notesListAdapter;
+    private RecyclerView recyclerView;
     private List<NoteModel> notes;
+    private SearchView searchView_home;
+    private NoteModel selectedNote;
+    private LottieAnimationView searchView_loader,search_load;
+    private Timer timer;
+    private TextView textView_select,textView_takeaphoto;
+
     FloatingActionButton fab_add;
-    SearchView searchView_home;
-    NoteModel selectedNote;
-    LottieAnimationView searchView_loader,search_load;
-    Timer timer;
-    TextView textView_select,textView_takeaphoto;
+    NotesListAdapter notesListAdapter;
 
     //sidebar
     DrawerLayout drawerLayout;
@@ -69,8 +73,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         setContentView(R.layout.activity_main);
 
         drawerLayout = findViewById(R.id.drawerlayout);
-        navigationView = findViewById(R.id.navigation_view);
-        toolbar = findViewById(R.id.header);
         searchView_loader = findViewById(R.id.searchView_loader);
 
         recyclerView = findViewById(R.id.recycle_home);
@@ -81,6 +83,30 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         
         textView_select=findViewById(R.id.textView_select);
         textView_takeaphoto=findViewById(R.id.textView_takeaphoto);
+
+        //sidebar
+        toolbar = findViewById(R.id.header);
+        setSupportActionBar(toolbar);
+
+        //click sidebar
+        navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        //siderbar
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+                drawerLayout,
+                toolbar,
+                R.string.navigation_open,
+                R.string.navigation_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new NoteFragment()).commit();
+            navigationView.setCheckedItem(R.id.note_menu);
+        }
+
 
         //toggle view
         view_list=findViewById(R.id.view_list);
@@ -121,14 +147,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         });
 
-        //siderbar
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
-                drawerLayout,
-                toolbar,
-                R.string.navigation_open,
-                R.string.navigation_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
         if(cardView.isFocused()){
             cardView.setVisibility(View.INVISIBLE);
         }
@@ -350,4 +368,34 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         },3000);
     }
+
+
+    //handle click sidebar
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.note_menu:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new NoteFragment()).commit();
+                break;
+            case R.id.reminder_menu:
+                System.out.println("clicked");
+                //do somthing
+                break;
+            }
+        //close navigation drawer
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 }
