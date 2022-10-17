@@ -4,13 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CameraPicture"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <androidx.camera.view.PreviewView
-        android:id="@+id/previewView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="90"/>
+        <ImageView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            />
     <ImageButton
         android:id="@+id/imageView_back"
         android:layout_width="100dp"
@@ -26,7 +28,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
         android:src="@drawable/tick32"
-        android:translationX="300dp"
+        android:translationX="1.9in"
         android:translationY="10dp"
         />
 
@@ -38,7 +40,7 @@
         android:background="@android:color/transparent"
         android:src="@drawable/camera"
         android:clickable="false"
-        android:translationX="0.9in"
+        android:translationX="0.95in"
         android:translationY="-10dp" />
 
 

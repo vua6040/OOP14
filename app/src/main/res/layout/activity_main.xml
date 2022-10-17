@@ -41,7 +41,7 @@
                 android:layout_width="300dp"
                 android:layout_height="180dp"
                 android:layout_alignParentTop="true"
-                android:layout_marginLeft="50dp"
+                android:layout_marginLeft=".23in"
                 android:layout_marginTop="274dp"
                 android:backgroundTint="@color/white"
                 app:cardCornerRadius="16dp"
@@ -88,6 +88,7 @@
         android:background="@color/white" >
 
         <RelativeLayout
+            android:id="@+id/wrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -107,6 +108,35 @@
                 android:layout_below="@+id/header"
                 android:layout_above="@+id/footer"
                 />
+
+            <LinearLayout
+                android:id="@+id/note_empty"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentStart="true"
+                android:layout_above="@id/footer"
+                android:layout_marginBottom=".8in"
+                android:layout_marginLeft="0.4in"
+                android:visibility="invisible"
+                >
+                <ImageView
+                    android:id="@+id/note_empty_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="320dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/note_empty"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Create your first note !"
+                    android:textSize="20dp"
+                    android:textColor="@color/black"
+                    android:textAlignment="center"
+                    android:paddingTop="4dp"
+                    />
+            </LinearLayout>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/header"
@@ -141,7 +171,7 @@
                         android:src="@color/transparent"
                         app:lottie_colorFilter="@color/transparent"
                         app:lottie_rawRes="@raw/infinity_loader"
-                        android:translationX="-350dp"
+                        android:translationX="-330dp"
                         />
                     <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/search_load"

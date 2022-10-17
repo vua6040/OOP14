@@ -22,7 +22,7 @@ public interface ApiService {
 
     Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
     //using ip myself
-    ApiService apiService = new Retrofit.Builder().baseUrl("http://10.20.57.67:3001/v1/").addConverterFactory(GsonConverterFactory.create(gson)).build().create(ApiService.class);
+    ApiService apiService = new Retrofit.Builder().baseUrl("https://note-app-android.herokuapp.com/v1/").addConverterFactory(GsonConverterFactory.create(gson)).build().create(ApiService.class);
 
     //HTTP
     @GET("notes")

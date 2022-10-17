@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     FloatingActionButton fab_add;
     NotesListAdapter notesListAdapter;
+    LinearLayout noteEmpty;
 
     //sidebar
     DrawerLayout drawerLayout;
@@ -76,11 +78,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         searchView_loader = findViewById(R.id.searchView_loader);
 
         recyclerView = findViewById(R.id.recycle_home);
+        noteEmpty = findViewById(R.id.note_empty);
         fab_add = findViewById(R.id.fab_add);
         searchView_home = findViewById(R.id.searchView_home);
         search_load = findViewById(R.id.search_load);
         cardView=findViewById(R.id.cardView);
-        
+
         textView_select=findViewById(R.id.textView_select);
         textView_takeaphoto=findViewById(R.id.textView_takeaphoto);
 
@@ -113,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         notes = new ArrayList<>();
 
         updateRecycler(2);
+        if(notes.size()==0){
+            noteEmpty.setVisibility(View.VISIBLE);
+        }
+
         //add note
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
 
+
             //WRITE_PERMISSION
             if(requestCode==101){
                 if(resultCode== Activity.RESULT_OK){
@@ -214,7 +222,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }else if(requestCode==102){
                 if(resultCode== Activity.RESULT_OK){
                     NoteModel new_note = (NoteModel) data.getSerializableExtra("newNote");
-                    System.out.println(new_note.getTitle());
                     ApiService.apiService.updateNote(new_note).enqueue(new Callback<NoteModel>() {
                         @Override
                         public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
@@ -253,6 +260,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numberColumn, LinearLayoutManager.VERTICAL));
 
+                if(notes.size()>0){
+                    noteEmpty.setVisibility(View.INVISIBLE);
+                }
                 notesListAdapter = new NotesListAdapter(MainActivity.this,notes,notesClickListener);
                 recyclerView.setAdapter(notesListAdapter);
             }
@@ -334,11 +344,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notesListAdapter.notifyDataSetChanged();
                 return true;
             case R.id.clone:
-                notes.add(selectedNote);
                 ApiService.apiService.addNote(selectedNote).enqueue(new Callback<NoteModel>() {
                     @Override
                     public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
                         Toast.makeText(MainActivity.this,"Clone success",Toast.LENGTH_LONG).show();
+                        notes.add(selectedNote);
                         notesListAdapter.notifyDataSetChanged();
                     }
 
@@ -347,7 +357,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                         Toast.makeText(MainActivity.this,"Clone Fail",Toast.LENGTH_LONG).show();
                     }
                 });
-                notesListAdapter.notifyDataSetChanged();
                 return true;
             default:
                 return false;

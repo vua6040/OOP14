@@ -82,6 +82,7 @@ public class NotesTakerActivity extends AppCompatActivity {
                     }
 
                     Uri uri=data.getData();
+                    System.out.println(uri);
                     sImage = uri;
                     try{
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
@@ -238,7 +239,21 @@ public class NotesTakerActivity extends AppCompatActivity {
                 });
             }
 
+            //TAKE A PICTURE
+            textView_take_photo.setOnClickListener(view1 -> {
+                Intent take = new Intent(NotesTakerActivity.this, CameraPicture.class);
+                startActivityIfNeeded(take,2003);
+            });
+
         });
+
+        //IMAGE FROM CAMERA PICTURE
+        Intent imgFCamera = getIntent();
+        String urlStringFCamera = imgFCamera.getStringExtra("takePicture");
+        if(urlStringFCamera!=null){
+            Uri pathFCamera = Uri.parse(urlStringFCamera);
+            imageView_img.setImageURI(pathFCamera);
+        }
 
         //BACK HOME
         imageView_back.setOnClickListener(view -> {
@@ -289,7 +304,7 @@ public class NotesTakerActivity extends AppCompatActivity {
 
     public void adds(View view){
         cardView.setVisibility(View.VISIBLE);
-        model_card.animate().translationY(1460).setDuration(500).setStartDelay(500);
+        model_card.animate().translationY(1660).setDuration(500).setStartDelay(500);
     }
 
     public void picture(View view){
@@ -300,11 +315,6 @@ public class NotesTakerActivity extends AppCompatActivity {
             cardView.setVisibility(View.INVISIBLE);
             model_card.setTranslationY(2000);
         }
-    }
-
-    public void select_take_photo(View view){
-        Intent take = new Intent(NotesTakerActivity.this, CameraPicture.class);
-        startActivity(take);
     }
 
     public void select_drawing(View view){
