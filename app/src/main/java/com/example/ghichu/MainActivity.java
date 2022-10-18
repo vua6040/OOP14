@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -19,7 +20,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
@@ -60,12 +63,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     FloatingActionButton fab_add;
     NotesListAdapter notesListAdapter;
     LinearLayout noteEmpty;
+    RelativeLayout wrapper;
 
     //sidebar
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     CardView cardView;
     Toolbar toolbar;
+    Switch switchBg;
+    public static boolean isChecked = false;
     //    View fragment_container;
 
     Button view_list;
@@ -77,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        wrapper = findViewById(R.id.wrapper);
         drawerLayout = findViewById(R.id.drawerlayout);
         searchView_loader = findViewById(R.id.searchView_loader);
 
@@ -124,12 +131,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         }
 
         //add note
-        fab_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
-                startActivityIfNeeded(intent,101); //WRITE_PERMISSION
-            }
+        fab_add.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
+            intent.putExtra("switchBg",String.valueOf(switchBg));
+            startActivityIfNeeded(intent,101); //WRITE_PERMISSION
         });
 
         //Search note
@@ -171,6 +176,23 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         textView_select.setOnClickListener(view->{
             Intent i = new Intent(MainActivity.this,NotesTakerActivity.class);
             startActivity(i);
+        });
+
+        //switch bg
+        switchBg =(Switch) findViewById(R.id.switchBg);
+        switchBg.setOnClickListener(view->{
+            isChecked = switchBg.isChecked();
+            if(isChecked){
+                wrapper.setBackgroundColor(getResources().getColor(R.color.black));
+                navigationView.setItemTextColor(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+                navigationView.setBackgroundColor(getResources().getColor(R.color.black));
+                navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+            }else{
+                wrapper.setBackgroundColor(getResources().getColor(R.color.white));
+                navigationView.setItemTextColor(ColorStateList.valueOf(getResources().getColor(R.color.black)));
+                navigationView.setBackgroundColor(getResources().getColor(R.color.white));
+                navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
+            }
         });
     }
 
@@ -405,7 +427,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 startActivity(login);
                 break;
             }
-        navigationView.setCheckedItem(R.id.note_menu);
         //close navigation drawer
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;

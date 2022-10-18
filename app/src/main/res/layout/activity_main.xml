@@ -19,7 +19,20 @@
         app:headerLayout="@layout/header_sidebar"
         app:menu="@menu/sidebar_menu"
         android:layout_gravity="start"
-        />
+        >
+        <Switch
+            android:id="@+id/switchBg"
+            android:paddingRight="20dp"
+            android:checked="false"
+            android:layout_marginTop="80dp"
+            android:layout_width="match_parent"
+            android:switchMinWidth="65dp"
+            android:text=" Night mode"
+            android:textSize="18dp"
+            android:textAlignment="center"
+            android:layout_height="50dp"/>
+
+    </com.google.android.material.navigation.NavigationView>
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
@@ -123,7 +136,7 @@
                     android:id="@+id/note_empty_img"
                     android:layout_width="match_parent"
                     android:layout_height="320dp"
-                    android:scaleType="centerCrop"
+                    android:scaleType="fitXY"
                     android:background="@drawable/note_empty"
                     />
                 <TextView

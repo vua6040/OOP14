@@ -38,6 +38,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +65,7 @@ public class NotesTakerActivity extends AppCompatActivity {
     private ImageView imageView_back,imageView_img;
     private  Uri sImage;
     private ImageButton imageView_pin,imageView_timer,imageView_save;
+    private LinearLayout layout_body;
     FirebaseStorage storage;
     NoteModel noteModel;
 
@@ -105,6 +107,7 @@ public class NotesTakerActivity extends AppCompatActivity {
         editText_notes = findViewById(R.id.editText_notes);
         editText_title = findViewById(R.id.editText_title);
         imageView_back = findViewById(R.id.imageView_back);
+        layout_body = findViewById(R.id.layout_body);
 
         cardView = findViewById(R.id.cardView);
         model_card = findViewById(R.id.model_card);
@@ -255,13 +258,26 @@ public class NotesTakerActivity extends AppCompatActivity {
         });
 
         //IMAGE FROM CAMERA PICTURE
-        Intent imgFCamera = getIntent();
-        String urlStringFCamera = imgFCamera.getStringExtra("takePicture");
+        Intent tentFrom = getIntent();
+        String urlStringFCamera = tentFrom.getStringExtra("takePicture");
         if(urlStringFCamera!=null){
             Uri pathFCamera = Uri.parse(urlStringFCamera);
             sImage = pathFCamera;
             isImgFCamera = true;
             imageView_img.setImageURI(pathFCamera);
+        }
+
+        //switch bg
+        String switchBg = tentFrom.getStringExtra("switchBg");
+        boolean isSwitch = Boolean.valueOf(switchBg);
+        if(isSwitch){
+            editText_title.setTextColor(getResources().getColor(R.color.white));
+            editText_notes.setTextColor(getResources().getColor(R.color.white));
+            layout_body.setBackgroundColor(getResources().getColor(R.color.black));
+        }else{
+            editText_title.setTextColor(getResources().getColor(R.color.black));
+            editText_notes.setTextColor(getResources().getColor(R.color.black));
+            layout_body.setBackgroundColor(getResources().getColor(R.color.white));
         }
 
         //BACK HOME
