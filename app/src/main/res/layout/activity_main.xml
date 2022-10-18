@@ -12,10 +12,6 @@
     tools:context=".MainActivity"
     >
     <!--sidebar-->
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
@@ -23,8 +19,6 @@
         app:headerLayout="@layout/header_sidebar"
         app:menu="@menu/sidebar_menu"
         android:layout_gravity="start"
-        android:clipChildren="true"
-        android:clickable="true"
         />
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -108,6 +102,11 @@
                 android:layout_below="@+id/header"
                 android:layout_above="@+id/footer"
                 />
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
 
             <LinearLayout
                 android:id="@+id/note_empty"
@@ -148,6 +147,7 @@
                 android:background="@color/_000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
+
 
                 <SearchView
                     android:id="@+id/searchView_home"

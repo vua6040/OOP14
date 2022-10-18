@@ -28,8 +28,10 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.example.ghichu.adapters.NotesListAdapter;
 import com.example.ghichu.api.ApiService;
 import com.example.ghichu.components.DrawingActivity;
-import com.example.ghichu.components.NoteFragment;
+import com.example.ghichu.components.Identify;
 import com.example.ghichu.components.NotesTakerActivity;
+import com.example.ghichu.components.ReminderFragment;
+import com.example.ghichu.components.ReminderViews;
 import com.example.ghichu.models.NoteModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     NavigationView navigationView;
     CardView cardView;
     Toolbar toolbar;
+    //    View fragment_container;
 
     Button view_list;
 
@@ -87,12 +90,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         textView_select=findViewById(R.id.textView_select);
         textView_takeaphoto=findViewById(R.id.textView_takeaphoto);
 
+//        fragment_container = findViewById(R.id.fragment_container);
+
         //sidebar
         toolbar = findViewById(R.id.header);
         setSupportActionBar(toolbar);
 
         //click sidebar
         navigationView = findViewById(R.id.navigation_view);
+        navigationView.bringToFront(); //binding
         navigationView.setNavigationItemSelectedListener(this);
 
         //siderbar
@@ -104,11 +110,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new NoteFragment()).commit();
-            navigationView.setCheckedItem(R.id.note_menu);
-        }
+        //DEFAULT SIDEBAR AUTO SELECT NOTE
+        navigationView.setCheckedItem(R.id.note_menu);
 
 
         //toggle view
@@ -385,26 +388,27 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         switch (item.getItemId()) {
 
             case R.id.note_menu:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new NoteFragment()).commit();
+//                fragment_container.setVisibility(View.INVISIBLE);
+//                recyclerView.setVisibility(View.VISIBLE);
+                navigationView.setCheckedItem(R.id.note_menu);
                 break;
             case R.id.reminder_menu:
-                System.out.println("clicked");
-                //do somthing
+                Intent i =new Intent(MainActivity.this, ReminderViews.class);
+                startActivity(i);
+//                fragment_container.setVisibility(View.VISIBLE);
+//                recyclerView.setVisibility(View.INVISIBLE);
+//                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+//                        new ReminderFragment()).commit();
+                break;
+            case R.id.login_menu:
+                Intent login =new Intent(MainActivity.this, Identify.class);
+                startActivity(login);
                 break;
             }
+        navigationView.setCheckedItem(R.id.note_menu);
         //close navigation drawer
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
 }

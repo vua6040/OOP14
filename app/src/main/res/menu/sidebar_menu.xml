@@ -9,5 +9,9 @@
             android:id="@+id/reminder_menu"
             android:icon="@drawable/ic_add_alert_24"
             android:title="Reminder"/>
+        <item
+            android:id="@+id/login_menu"
+            android:icon="@drawable/ic_login"
+            android:title="Login"/>
     </group>
 </menu>

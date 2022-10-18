@@ -55,6 +55,7 @@ import retrofit2.Response;
 public class NotesTakerActivity extends AppCompatActivity {
 
     private static final int MY_REQUEST_CODE = 10;
+    private static Boolean isImgFCamera=false;
 
     public static final String TAG=Manifest.class.getName();
     private TextView textView_select,textView_take_photo;
@@ -130,24 +131,26 @@ public class NotesTakerActivity extends AppCompatActivity {
                         noteModel = response.body();
                         editText_title.setText(noteModel.getTitle());
                         editText_notes.setText(noteModel.getNotes());
-                        StorageReference storageReference = storage.getReferenceFromUrl("gs://ghi-chu-8944e.appspot.com/images/").child(noteModel.getImg());
-                        try {
-                            final File file = File.createTempFile("image","jpg");
-                            storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                                    imageView_img.setImageBitmap(bitmap);
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(NotesTakerActivity.this,"Image faild to load",Toast.LENGTH_LONG).show();
-                                }
-                            });
+                        if(!noteModel.getImg().isEmpty()){
+                            StorageReference storageReference = storage.getReferenceFromUrl("gs://ghi-chu-8944e.appspot.com/images/").child(noteModel.getImg());
+                            try {
+                                final File file = File.createTempFile("image","jpg");
+                                storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                        imageView_img.setImageBitmap(bitmap);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(NotesTakerActivity.this,"Image faild to load",Toast.LENGTH_LONG).show();
+                                    }
+                                });
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
 
@@ -217,6 +220,10 @@ public class NotesTakerActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
                         mProgressDialog.dismiss();
+                        if(isImgFCamera){
+                            Intent i =new Intent(NotesTakerActivity.this,MainActivity.class);
+                            startActivity(i);
+                        }
                         Intent intent = new Intent();
                         String jsonString="";
 
@@ -242,7 +249,7 @@ public class NotesTakerActivity extends AppCompatActivity {
             //TAKE A PICTURE
             textView_take_photo.setOnClickListener(view1 -> {
                 Intent take = new Intent(NotesTakerActivity.this, CameraPicture.class);
-                startActivityIfNeeded(take,2003);
+                startActivity(take);
             });
 
         });
@@ -252,6 +259,8 @@ public class NotesTakerActivity extends AppCompatActivity {
         String urlStringFCamera = imgFCamera.getStringExtra("takePicture");
         if(urlStringFCamera!=null){
             Uri pathFCamera = Uri.parse(urlStringFCamera);
+            sImage = pathFCamera;
+            isImgFCamera = true;
             imageView_img.setImageURI(pathFCamera);
         }
 
