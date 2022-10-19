@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +32,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.ghichu.adapters.NotesListAdapter;
 import com.example.ghichu.api.ApiService;
+import com.example.ghichu.components.DataLocalManager;
 import com.example.ghichu.components.DrawingActivity;
 import com.example.ghichu.components.Identify;
 import com.example.ghichu.components.NotesTakerActivity;
@@ -71,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     CardView cardView;
     Toolbar toolbar;
     Switch switchBg;
-    public static boolean isChecked = false;
     //    View fragment_container;
 
     Button view_list;
@@ -82,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //save data to store
+        DataLocalManager.init(getApplicationContext());
 
         wrapper = findViewById(R.id.wrapper);
         drawerLayout = findViewById(R.id.drawerlayout);
@@ -133,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         //add note
         fab_add.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, NotesTakerActivity.class);
-            intent.putExtra("switchBg",String.valueOf(switchBg));
             startActivityIfNeeded(intent,101); //WRITE_PERMISSION
         });
 
@@ -181,19 +185,33 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         //switch bg
         switchBg =(Switch) findViewById(R.id.switchBg);
         switchBg.setOnClickListener(view->{
-            isChecked = switchBg.isChecked();
-            if(isChecked){
+            if(!DataLocalManager.getFirstInstalled()){
+                DataLocalManager.setFirstInstalled(true);
                 wrapper.setBackgroundColor(getResources().getColor(R.color.black));
                 navigationView.setItemTextColor(ColorStateList.valueOf(getResources().getColor(R.color.white)));
                 navigationView.setBackgroundColor(getResources().getColor(R.color.black));
                 navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
             }else{
+                DataLocalManager.setFirstInstalled(false);
                 wrapper.setBackgroundColor(getResources().getColor(R.color.white));
                 navigationView.setItemTextColor(ColorStateList.valueOf(getResources().getColor(R.color.black)));
                 navigationView.setBackgroundColor(getResources().getColor(R.color.white));
                 navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
             }
         });
+        if(DataLocalManager.getFirstInstalled()){
+            switchBg.setChecked(true);
+            wrapper.setBackgroundColor(getResources().getColor(R.color.black));
+            navigationView.setItemTextColor(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+            navigationView.setBackgroundColor(getResources().getColor(R.color.black));
+            navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+        }else{
+            switchBg.setChecked(false);
+            wrapper.setBackgroundColor(getResources().getColor(R.color.white));
+            navigationView.setItemTextColor(ColorStateList.valueOf(getResources().getColor(R.color.black)));
+            navigationView.setBackgroundColor(getResources().getColor(R.color.white));
+            navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
+        }
     }
 
     //Button

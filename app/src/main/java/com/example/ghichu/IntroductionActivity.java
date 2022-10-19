@@ -28,9 +28,9 @@ public class IntroductionActivity extends AppCompatActivity {
         lottieAnimationView =findViewById(R.id.lottie_intro);
         textView = findViewById(R.id.textView2);
 
-        introImg.animate().translationY(-2900).setDuration(1900).setStartDelay(2300);
-        lottieAnimationView.animate().translationY(2000).setDuration(1900).setStartDelay(2300);
-        textView.animate().translationX(2000).setDuration(1900).setStartDelay(2400);
+        introImg.animate().translationY(-2900).setDuration(1600).setStartDelay(2100);
+        lottieAnimationView.animate().translationY(2000).setDuration(1600).setStartDelay(2100);
+        textView.animate().translationX(2000).setDuration(1600).setStartDelay(2200);
 
         timer = new Timer();
         timer.schedule(new TimerTask() {

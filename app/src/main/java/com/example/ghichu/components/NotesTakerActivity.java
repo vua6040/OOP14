@@ -103,6 +103,9 @@ public class NotesTakerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_taker);
 
+        //save data to store
+        DataLocalManager.init(getApplicationContext());
+
         imageView_save = findViewById(R.id.imageView_save);
         editText_notes = findViewById(R.id.editText_notes);
         editText_title = findViewById(R.id.editText_title);
@@ -268,8 +271,7 @@ public class NotesTakerActivity extends AppCompatActivity {
         }
 
         //switch bg
-        String switchBg = tentFrom.getStringExtra("switchBg");
-        boolean isSwitch = Boolean.valueOf(switchBg);
+        boolean isSwitch = DataLocalManager.getFirstInstalled();
         if(isSwitch){
             editText_title.setTextColor(getResources().getColor(R.color.white));
             editText_notes.setTextColor(getResources().getColor(R.color.white));
