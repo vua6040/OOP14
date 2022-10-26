@@ -387,7 +387,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notesListAdapter.notifyDataSetChanged();
                 return true;
             case R.id.clone:
-                ApiService.apiService.addNote(selectedNote).enqueue(new Callback<NoteModel>() {
+                NoteModel cloneNote = (NoteModel) selectedNote;
+                ApiService.apiService.addNote(cloneNote).enqueue(new Callback<NoteModel>() {
                     @Override
                     public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
                         Toast.makeText(MainActivity.this,"Clone success",Toast.LENGTH_LONG).show();
