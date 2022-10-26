@@ -51,23 +51,15 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
     @Override
     public void onBindViewHolder(@NonNull NotesViewHolder holder, int position) {
         //FIREBASE
-        if(!list.get(position).getImg().isEmpty()){
+        if(!list.get(position).getImg().isEmpty() && list.get(position).getImg().length()>0){
             storage = FirebaseStorage.getInstance();
             StorageReference storageReference = storage.getReferenceFromUrl("gs://ghi-chu-8944e.appspot.com/images/").child(list.get(position).getImg());
             try {
                 final File file = File.createTempFile("image","jpg");
-                storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                        holder.imageView_img.setImageBitmap(bitmap);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("adapter",e.getMessage());
-                    }
-                });
+                storageReference.getFile(file).addOnSuccessListener(taskSnapshot -> {
+                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    holder.imageView_img.setImageBitmap(bitmap);
+                }).addOnFailureListener(e -> Log.e("adapter",e.getMessage()));
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -91,19 +83,11 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
         int color_code=getRandomColor();
         holder.notes_container.setCardBackgroundColor(holder.itemView.getResources().getColor(color_code,null));
 
-        holder.notes_container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onClick(list.get(holder.getAdapterPosition()));
-            }
-        });
+        holder.notes_container.setOnClickListener(view -> listener.onClick(list.get(holder.getAdapterPosition())));
 
-        holder.notes_container.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                listener.onLongClick(list.get(holder.getAdapterPosition()), holder.notes_container);
-                return false;
-            }
+        holder.notes_container.setOnLongClickListener(view -> {
+            listener.onLongClick(list.get(holder.getAdapterPosition()), holder.notes_container);
+            return false;
         });
     }
 

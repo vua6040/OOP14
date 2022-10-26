@@ -141,12 +141,9 @@ public class NotesTakerActivity extends AppCompatActivity {
                             StorageReference storageReference = storage.getReferenceFromUrl("gs://ghi-chu-8944e.appspot.com/images/").child(noteModel.getImg());
                             try {
                                 final File file = File.createTempFile("image","jpg");
-                                storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                                        imageView_img.setImageBitmap(bitmap);
-                                    }
+                                storageReference.getFile(file).addOnSuccessListener(taskSnapshot -> {
+                                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                    imageView_img.setImageBitmap(bitmap);
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
@@ -197,14 +194,11 @@ public class NotesTakerActivity extends AppCompatActivity {
             if(sImage!=null){
                 String rId=UUID.randomUUID().toString();
                 StorageReference reference = storage.getReference().child("images/"+rId );
-                reference.putFile(sImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if(task.isSuccessful()){
-                            Log.d("upload","success");
-                        }else{
-                            Log.e("upload","fail");
-                        }
+                reference.putFile(sImage).addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        Log.d("upload","success");
+                    }else{
+                        Log.e("upload","fail");
                     }
                 });
                 noteModel.setImg(rId);
