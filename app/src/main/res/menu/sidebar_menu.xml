@@ -11,7 +11,7 @@
             android:title="Reminder"/>
         <item
             android:id="@+id/login_menu"
-            android:icon="@drawable/ic_login"
-            android:title="Login"/>
+            android:icon="@drawable/ic_baseline_logout_24"
+            android:title="Logout"/>
     </group>
 </menu>

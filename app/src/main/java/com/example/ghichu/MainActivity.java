@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     private LottieAnimationView searchView_loader,search_load;
     private Timer timer;
     private TextView textView_select,textView_takeaphoto;
+    private String userId="-1";
+    private Integer viewColumn = 2;
 
     FloatingActionButton fab_add;
     NotesListAdapter notesListAdapter;
@@ -102,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         textView_select=findViewById(R.id.textView_select);
         textView_takeaphoto=findViewById(R.id.textView_takeaphoto);
 
-//        fragment_container = findViewById(R.id.fragment_container);
 
         //sidebar
         toolbar = findViewById(R.id.header);
@@ -130,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         view_list=findViewById(R.id.view_list);
         notes = new ArrayList<>();
 
-        updateRecycler(2);
+        updateRecycler(viewColumn);
         if(notes.size()==0){
             noteEmpty.setVisibility(View.VISIBLE);
         }
@@ -183,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         });
 
         //switch bg
-        switchBg =(Switch) findViewById(R.id.switchBg);
+        switchBg = findViewById(R.id.switchBg);
         switchBg.setOnClickListener(view->{
             if(!DataLocalManager.getFirstInstalled()){
                 DataLocalManager.setFirstInstalled(true);
@@ -212,7 +214,20 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             navigationView.setBackgroundColor(getResources().getColor(R.color.white));
             navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
         }
+
+        //CHECK USER IS LOGIN
+        String isExistUser = DataLocalManager.getFirstUser();
+        userId=isExistUser;
+        System.out.println(userId);
+        if(isExistUser.length()==0 || isExistUser.isEmpty() || isExistUser.equals("null") || Integer.parseInt(userId)<=0){
+            Intent i = new Intent(MainActivity.this,Identify.class);
+            startActivity(i);
+        }else{
+            navigationView.getMenu().getItem(2).setIcon(getResources().getDrawable(R.drawable.ic_baseline_logout_24));
+        }
     }
+
+
 
     //Button
     public void drawing(View view){
@@ -234,10 +249,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     public void toggleView(View view){
         if(toggle) {
             view_list.setBackgroundResource(R.drawable.verticals);
+            viewColumn=1;
             updateRecycler(1);
             toggle=false;
         }else{
             view_list.setBackgroundResource(R.drawable.grid);
+            viewColumn=2;
             updateRecycler(2);
             toggle=true;
         }
@@ -251,12 +268,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             //WRITE_PERMISSION
             if(requestCode==101){
                 if(resultCode== Activity.RESULT_OK){
-
                     GsonBuilder builder = new GsonBuilder();
                     builder.setPrettyPrinting();
                     Gson gson = builder.create();
 
-                    NoteModel new_note = (NoteModel) (gson.fromJson((String) data.getSerializableExtra("newNote"),NoteModel.class));
+                    NoteModel new_note = gson.fromJson((String) data.getSerializableExtra("newNote"),NoteModel.class);
                     notes.add(new_note);
                     Toast.makeText(MainActivity.this,"Add Note Success",Toast.LENGTH_LONG).show();
 
@@ -272,7 +288,14 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                             ApiService.apiService.getAllNotes().enqueue(new Callback<List<NoteModel>>() {
                                 @Override
                                 public void onResponse(Call<List<NoteModel>> call, Response<List<NoteModel>> response) {
-                                    notes.addAll(response.body());
+                                    List<NoteModel> noteOfUser = new ArrayList<>();
+                                    noteOfUser.addAll(response.body());
+                                    for(NoteModel n:noteOfUser){
+                                        if (n.getUserId().equals(String.valueOf(userId))) {
+                                            NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId());
+                                            notes.add(note);
+                                        }
+                                    }
                                     Toast.makeText(MainActivity.this,"Unpinned",Toast.LENGTH_LONG).show();
                                     notesListAdapter.notifyDataSetChanged();
                                 }
@@ -296,10 +319,18 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     //Grid:split two column
     private void updateRecycler(int numberColumn) {
+        notes.clear();
         ApiService.apiService.getAllNotes().enqueue(new Callback<List<NoteModel>>() {
             @Override
             public void onResponse(Call<List<NoteModel>> call, Response<List<NoteModel>> response) {
-                notes = response.body();
+                List<NoteModel> noteOfUser = new ArrayList<>();
+                noteOfUser.addAll(response.body());
+                for(NoteModel n:noteOfUser){
+                    if (n.getUserId().equals(String.valueOf(userId))) {
+                        NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId());
+                        notes.add(note);
+                    }
+                }
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new StaggeredGridLayoutManager(numberColumn, LinearLayoutManager.VERTICAL));
 
@@ -327,8 +358,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         }
 
         @Override
-        public void onLongClick(NoteModel notes, CardView cardView) {
-            selectedNote = notes;
+        public void onLongClick(NoteModel note, CardView cardView) {
+            selectedNote = note;
             showPopup(cardView);
         }
 
@@ -351,30 +382,50 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                             ApiService.apiService.getAllNotes().enqueue(new Callback<List<NoteModel>>() {
                                 @Override
                                 public void onResponse(Call<List<NoteModel>> call, Response<List<NoteModel>> response) {
-                                    notes.addAll(response.body());
-                                    Toast.makeText(MainActivity.this,"Unpinned",Toast.LENGTH_LONG).show();
+                                    List<NoteModel> noteOfUser = new ArrayList<>();
+                                    noteOfUser.addAll(response.body());
+                                    for(NoteModel n:noteOfUser){
+                                        if (n.getUserId().equals(String.valueOf(userId))) {
+                                            NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId());
+                                            notes.add(note);
+                                        }
+                                    }
+                                    if(selectedNote.getPinned()==true){
+                                        Toast.makeText(MainActivity.this,"Unpinned",Toast.LENGTH_LONG).show();
+                                    }else{
+                                        Toast.makeText(MainActivity.this,"Pinned",Toast.LENGTH_LONG).show();
+                                    }
+                                    updateRecycler(viewColumn);
                                     notesListAdapter.notifyDataSetChanged();
                                 }
 
                                 @Override
                                 public void onFailure(Call<List<NoteModel>> call, Throwable t) {
-                                    Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
+                                    if(selectedNote.getPinned()==true){
+                                        Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
+                                    }else{
+                                        Toast.makeText(MainActivity.this,"Pinned Fail",Toast.LENGTH_LONG).show();
+                                    }
                                 }
                             });
                         }
 
                         @Override
                         public void onFailure(Call<NoteModel> call, Throwable t) {
-                            Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
+                            if(selectedNote.getPinned()==true){
+                                Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
+                            }else{
+                                Toast.makeText(MainActivity.this,"Pinned Fail",Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
-                notesListAdapter.notifyDataSetChanged();
                 return true;
             case R.id.delete:
-                notes.remove(selectedNote);
                 ApiService.apiService.deleteNote(selectedNote.getId()).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
+                        notes.remove(selectedNote);
+                        updateRecycler(viewColumn);
                         Toast.makeText(MainActivity.this,"Delete Successful",Toast.LENGTH_LONG).show();
                         notesListAdapter.notifyDataSetChanged();
                     }
@@ -384,15 +435,14 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                         Toast.makeText(MainActivity.this,"Delete Fail",Toast.LENGTH_LONG).show();
                     }
                 });
-                notesListAdapter.notifyDataSetChanged();
                 return true;
             case R.id.clone:
-                NoteModel cloneNote = (NoteModel) selectedNote;
-                ApiService.apiService.addNote(cloneNote).enqueue(new Callback<NoteModel>() {
+                ApiService.apiService.addNote(selectedNote).enqueue(new Callback<NoteModel>() {
                     @Override
                     public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
-                        Toast.makeText(MainActivity.this,"Clone success",Toast.LENGTH_LONG).show();
                         notes.add(selectedNote);
+                        updateRecycler(viewColumn);
+                        Toast.makeText(MainActivity.this,"Clone success",Toast.LENGTH_LONG).show();
                         notesListAdapter.notifyDataSetChanged();
                     }
 
@@ -442,8 +492,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 //                        new ReminderFragment()).commit();
                 break;
             case R.id.login_menu:
-                Intent login =new Intent(MainActivity.this, Identify.class);
-                startActivity(login);
+                Intent in =new Intent(MainActivity.this, Identify.class);
+                startActivity(in);
                 break;
             }
         //close navigation drawer

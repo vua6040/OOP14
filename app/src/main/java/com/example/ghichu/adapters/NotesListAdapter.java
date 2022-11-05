@@ -65,7 +65,6 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
                 e.printStackTrace();
             }
         }
-
         holder.textView_title.setText(list.get(position).getTitle());
         holder.textView_title.setSelected(true);
 
@@ -73,7 +72,6 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
 
         holder.textView_date.setText(list.get(position).getTimeCreate());
         holder.textView_date.setSelected(true);
-
         if(list.get(position).getPinned()){
             holder.imageView_pin.setImageResource(R.drawable.pin);
         }else{

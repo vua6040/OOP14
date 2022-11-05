@@ -2,6 +2,7 @@ package com.example.ghichu.api;
 
 
 import com.example.ghichu.models.NoteModel;
+import com.example.ghichu.models.UserModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -25,6 +26,15 @@ public interface ApiService {
     ApiService apiService = new Retrofit.Builder().baseUrl("https://note-app-android.herokuapp.com/v1/").addConverterFactory(GsonConverterFactory.create(gson)).build().create(ApiService.class);
 
     //HTTP
+    @GET("users")
+    Call<List<UserModel>> getUsers();
+
+    @GET("notesU/{id}")
+    Call<List<NoteModel>> getNotesU(@Path("id") String Id);
+
+    @POST("users")
+    Call<UserModel> addUser(@Body UserModel userModel);
+
     @GET("notes")
     Call<List<NoteModel>> getAllNotes();
 

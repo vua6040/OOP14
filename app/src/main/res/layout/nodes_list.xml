@@ -41,7 +41,8 @@
             android:text="Title"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            />
         <TextView
             android:id="@+id/textView_notes"
             android:text="Notes."

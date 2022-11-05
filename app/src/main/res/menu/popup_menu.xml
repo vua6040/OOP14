@@ -4,11 +4,14 @@
 
     <item android:id="@+id/pin"
         android:title="Pin/unpin"
+        android:orderInCategory="0"
         />
     <item android:id="@+id/clone"
         android:title="Clone"
+        android:orderInCategory="1"
         />
     <item android:id="@+id/delete"
         android:title="Delete"
+        android:orderInCategory="2"
         />
 </menu>

@@ -209,6 +209,7 @@ public class NotesTakerActivity extends AppCompatActivity {
             noteModel.setTitle(title);
             noteModel.setTimeCreate(formatter.format(date));
             noteModel.setNotes(description);
+            noteModel.setUserId((String) DataLocalManager.getFirstUser());
 
             //CALL API ADD NOTE
             if(description.isEmpty()&&title.isEmpty()&&(sImage==null || String.valueOf(sImage).isEmpty())){
