@@ -242,7 +242,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             noteModel.setTitle(title);
             noteModel.setTimeCreate(formatter.format(date));
             noteModel.setNotes(description);
-            noteModel.setUserId((String) DataLocalManager.getFirstUser());
+            noteModel.setUserId(DataLocalManager.getFirstUser());
 
             //CALL API ADD NOTE
             if(description.isEmpty()&&title.isEmpty()&&(sImage==null || String.valueOf(sImage).isEmpty())){
@@ -365,6 +365,11 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     public void adds(View view){
         cardView.setVisibility(View.VISIBLE);
         model_card.animate().translationY(1660).setDuration(500).setStartDelay(500);
+    }
+
+    //Cancel Edit calender
+    public void btnCancel(View view){
+        cardView_reminder.setVisibility(View.INVISIBLE);
     }
 
     public void picture(View view){
