@@ -11,14 +11,9 @@ import com.example.ghichu.MainActivity;
 import com.example.ghichu.api.ApiService;
 import com.example.ghichu.models.NoteModel;
 import com.example.ghichu.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -60,12 +55,13 @@ public class NotesTakerActivity extends AppCompatActivity {
 
     public static final String TAG=Manifest.class.getName();
     private TextView textView_select,textView_take_photo;
-    private CardView cardView,model_card;
+    private CardView cardView,model_card,cardView_reminder;
     private EditText editText_title,editText_notes;
     private ImageView imageView_back,imageView_img;
     private  Uri sImage;
     private ImageButton imageView_pin,imageView_timer,imageView_save;
     private LinearLayout layout_body;
+
     FirebaseStorage storage;
     NoteModel noteModel;
 
@@ -111,6 +107,8 @@ public class NotesTakerActivity extends AppCompatActivity {
         editText_title = findViewById(R.id.editText_title);
         imageView_back = findViewById(R.id.imageView_back);
         layout_body = findViewById(R.id.layout_body);
+        imageView_timer=findViewById(R.id.imageView_timer);
+        cardView_reminder=findViewById(R.id.cardView_reminder);
 
         cardView = findViewById(R.id.cardView);
         model_card = findViewById(R.id.model_card);
@@ -287,6 +285,11 @@ public class NotesTakerActivity extends AppCompatActivity {
         textView_select.setOnClickListener(view -> onClickRequestPermission());
 
         textView_take_photo.setOnClickListener(this::onClick);
+
+        if(cardView_reminder.isFocused()){
+            cardView_reminder.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     private void onClickRequestPermission() {
@@ -337,6 +340,14 @@ public class NotesTakerActivity extends AppCompatActivity {
             cardView.setVisibility(View.INVISIBLE);
             model_card.setTranslationY(2000);
         }
+    }
+
+    public void editReminder(View view){
+        int visible=cardView_reminder.getVisibility();
+        if(visible==4)
+            cardView_reminder.setVisibility(View.VISIBLE);
+        else
+            cardView_reminder.setVisibility(View.INVISIBLE);
     }
 
     public void select_drawing(View view){

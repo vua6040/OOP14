@@ -39,6 +39,7 @@
         android:layout_height="match_parent"
         android:backgroundTint="@color/backdrop"
         android:clickable="true"
+        app:cardCornerRadius="16dp"
         android:onClick="picture"
         android:visibility="invisible"
         android:clipChildren="true"
