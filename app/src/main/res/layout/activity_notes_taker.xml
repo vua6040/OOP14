@@ -154,7 +154,7 @@
                 android:paddingTop="8dp"
                 android:textStyle="bold" />
             <TextView
-                android:id="@+id/btn_calender"
+                android:id="@+id/tv_date"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:text="📅 Select calender"
@@ -165,7 +165,7 @@
                 android:paddingLeft="10dp"
                 android:textStyle="bold" />
             <TextView
-                android:id="@+id/btn_time"
+                android:id="@+id/tv_time"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:text="⏰ Select time"

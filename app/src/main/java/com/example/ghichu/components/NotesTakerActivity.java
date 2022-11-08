@@ -16,6 +16,27 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import android.app.AlarmManager;
+import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import android.Manifest;
 import android.app.Activity;
@@ -36,10 +57,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -48,7 +72,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class NotesTakerActivity extends AppCompatActivity {
+public class NotesTakerActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, DatePickerDialog.OnDateSetListener {
 
     private static final int MY_REQUEST_CODE = 10;
     private static Boolean isImgFCamera=false;
@@ -61,7 +85,16 @@ public class NotesTakerActivity extends AppCompatActivity {
     private  Uri sImage;
     private ImageButton imageView_pin,imageView_timer,imageView_save;
     private LinearLayout layout_body;
-
+    private TextView tvDate;
+    private TextView tvTime;
+    private NotificationManager notificationManager;
+    private int selectedMonth, selectedYear, selectedDay = 0;
+    private boolean isSelectTime = false;
+    private boolean isSelectDate = false;
+    private Calendar todayCalender;
+    private Calendar selectedDate;
+    private int mYear, mMonth, mDay, mHour, mMinute;
+    public static String APP_NAME = "Note App";
     FirebaseStorage storage;
     NoteModel noteModel;
 
@@ -99,6 +132,8 @@ public class NotesTakerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_taker);
 
+        // init Reminder
+        init();
         //save data to store
         DataLocalManager.init(getApplicationContext());
 
@@ -355,9 +390,140 @@ public class NotesTakerActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    private void onClick(View view) {
-        Intent i = new Intent(NotesTakerActivity.this, CameraPicture.class);
-        startActivity(i);
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.textView_take_photo:
+                Intent i = new Intent(NotesTakerActivity.this, CameraPicture.class);
+                startActivity(i);
+                break;
+            case R.id.tv_date:
+                selectDate();
+                break;
+            case R.id.tv_time:
+                selectTime();
+                break;
+            default:
+                break;
+        }
     }
 
+    private void init() {
+        //Create Channel
+        createNotificationChannel();
+
+        tvDate = findViewById(R.id.tv_date);
+        tvTime = findViewById(R.id.tv_time);
+        //Listeners
+        tvDate.setOnClickListener( this :: onClick);
+        tvTime.setOnClickListener(this :: onClick);
+
+    }
+
+    private void selectDate() {
+        todayCalender = Calendar.getInstance();
+        mYear = todayCalender.get(Calendar.YEAR);
+        mMonth = todayCalender.get(Calendar.MONTH);
+        mDay = todayCalender.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog dialog = new DatePickerDialog( this,  this, mYear, mMonth, mDay);
+        dialog.show();
+    }
+    public boolean isValidDate(String d1, String d2)   {
+        SimpleDateFormat dfDate  = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+        try {
+            return dfDate.parse(d1).before(dfDate.parse(d2)) || dfDate.parse(d1).equals(dfDate.parse(d2));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    private void selectTime() {
+        // Get Current Time
+        final Calendar c = Calendar.getInstance();
+        mHour = c.get(Calendar.HOUR_OF_DAY);
+        mMinute = c.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+                        selectedDate = Calendar.getInstance();
+                        selectedDate.set(Calendar.YEAR, selectedYear);
+                        selectedDate.set(Calendar.MONTH, selectedMonth);
+                        selectedDate.set(Calendar.DAY_OF_MONTH, selectedDay);
+                        selectedDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        selectedDate.set(Calendar.MINUTE, minute);
+
+                        Date date2 = new Date(selectedDate.getTimeInMillis());
+                        Date current = new Date(c.getTimeInMillis());
+
+                        if (current.after(date2)) {
+                            Toast.makeText(NotesTakerActivity.this, "Wrong time selected. Please verify!", Toast.LENGTH_SHORT).show();
+                            tvTime.setText("Pick Time");
+                            isSelectTime = false;
+                        } else {
+                            tvTime.setText(String.format("%s:%s", hourOfDay, minute));
+                            isSelectTime = true;
+                        }
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+    }
+
+    private void createNotificationChannel() {
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "channel_name";
+            String description = "channel_description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(APP_NAME, name, importance);
+            channel.setDescription(description);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        selectedMonth = month;
+        selectedYear = year;
+        selectedDay = dayOfMonth;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+        if(isValidDate(todayCalender.getTime().toString(), cal.getTime().toString())) {
+            tvDate.setText(String.format("%s - %s - %s", dayOfMonth, month+1, year));
+            isSelectDate = true;
+            selectTime();
+        } else {
+            isSelectDate = false;
+            Toast.makeText(this, "Select Valid Date !", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+    }
+
+    public void scheduleNotification(Context context, long delay, String title, String message) {//delay is after how much time(in millis) from current time you want to schedule the notification
+
+        int randomNotificationId = true ? (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE) : 0;
+
+        Intent notificationIntent = new Intent(context, MyNotificationPublisher.class);
+        notificationIntent.putExtra(MyNotificationPublisher.NOTIFICATION_ID, randomNotificationId);
+        notificationIntent.putExtra(MyNotificationPublisher.KEY_EXPAND, true);
+        notificationIntent.putExtra(MyNotificationPublisher.KEY_MULTIPLE, true);
+        notificationIntent.putExtra(MyNotificationPublisher.KEY_SOUND, true);
+        notificationIntent.putExtra(MyNotificationPublisher.KEY_MESSAGE, message);
+        notificationIntent.putExtra(MyNotificationPublisher.KEY_TITLE, title);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, randomNotificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+    }
 }

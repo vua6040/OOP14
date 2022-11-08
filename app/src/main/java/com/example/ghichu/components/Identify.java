@@ -96,6 +96,7 @@ public class Identify extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"User Exist!",Toast.LENGTH_LONG).show();
                     return;
                 }
+                System.out.println(1);
                 if(isGetApiSuccess && (username.length() != 0) && (password.length() != 0)){
                     ApiService.apiService.addUser(user).enqueue(new Callback<UserModel>() {
                         @Override
