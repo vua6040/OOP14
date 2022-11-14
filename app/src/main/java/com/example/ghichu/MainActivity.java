@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                                     noteOfUser.addAll(response.body());
                                     for(NoteModel n:noteOfUser){
                                         if (n.getUserId().equals(String.valueOf(userId))) {
-                                            NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId());
+                                            NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId(),n.getReminder());
                                             notes.add(note);
                                         }
                                     }
@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 noteOfUser.addAll(response.body());
                 for(NoteModel n:noteOfUser){
                     if (n.getUserId().equals(String.valueOf(userId))) {
-                        NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId());
+                        NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId(),n.getReminder());
                         notes.add(note);
                     }
                 }
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                                     noteOfUser.addAll(response.body());
                                     for(NoteModel n:noteOfUser){
                                         if (n.getUserId().equals(String.valueOf(userId))) {
-                                            NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId());
+                                            NoteModel note = new NoteModel(n.getId(),n.getTitle(),n.getNotes(),n.getImg(),n.getTimeCreate(),n.getPinned(),n.getUserId(),n.getReminder());
                                             notes.add(note);
                                         }
                                     }
@@ -481,7 +481,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 navigationView.setCheckedItem(R.id.note_menu);
                 break;
             case R.id.reminder_menu:
-                Intent i =new Intent(MainActivity.this, ReminderViews.class);
+                Intent i =new Intent(MainActivity.this, NotesTakerActivity.class);
                 startActivity(i);
 //                fragment_container.setVisibility(View.VISIBLE);
 //                recyclerView.setVisibility(View.INVISIBLE);

@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     app:cardBackgroundColor="@color/white"
     android:id="@+id/notes_container"
     app:cardCornerRadius="8dp"
     app:cardElevation="8dp"
-    android:layout_margin="8dp"
-    >
+    android:layout_margin="8dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,6 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <LinearLayout
+            android:id="@+id/reminder_container"
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:background="@drawable/rounded_corner_cancel"
@@ -82,27 +83,18 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/alarm"
                 />
+
             <TextView
-                android:id="@+id/day"
+                android:id="@+id/reminder_time"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Monday, "
-                android:textColor="@color/black"
-                android:textSize="13dp"
-                android:paddingLeft="6dp"
-                android:paddingTop="5dp"
-                android:textAlignment="center"
-                />
-            <TextView
-                android:id="@+id/time"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="18:00"
+                android:text="Monday, 18:00"
                 android:textColor="@color/black"
                 android:textSize="13dp"
                 android:paddingTop="6dp"
                 android:paddingRight="6dp"
-                android:textAlignment="textStart"
+                android:paddingLeft="6dp"
+                android:textAlignment="center"
                 />
         </LinearLayout>
     </LinearLayout>

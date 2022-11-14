@@ -3,7 +3,7 @@ package com.example.ghichu.models;
 
 public class NoteModel {
         private Integer id;
-        private String title, notes, img, timeCreate,userId;
+        private String title, notes, img, timeCreate,userId,reminder;
         private Boolean pinned;
 
         public NoteModel() {
@@ -11,23 +11,26 @@ public class NoteModel {
             this.title="";
             this.pinned=false;
             this.notes="";
+            this.reminder="";
         }
 
-    public NoteModel(String title, String notes, String img, String timeCreate, Boolean pinned) {
+    public NoteModel(String title, String notes, String img, String timeCreate, Boolean pinned,String reminder) {
         this.title = title;
         this.img = img;
         this.notes = notes;
         this.timeCreate = timeCreate;
         this.pinned = pinned;
+        this.reminder=reminder;
     }
 
-        public NoteModel(Integer id, String title, String notes, String img, String timeCreate, Boolean pinned, String userId) {
+        public NoteModel(Integer id, String title, String notes, String img, String timeCreate, Boolean pinned, String userId,String reminder) {
             this.id = id;
             this.title = title;
             this.img = img;
             this.notes = notes;
             this.timeCreate = timeCreate;
             this.pinned = pinned;
+            this.reminder=reminder;
             this.userId = userId;
         }
 
@@ -77,6 +80,14 @@ public class NoteModel {
 
         public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+        public String getReminder() {
+        return this.reminder;
+    }
+
+        public void setReminder(String reminder) {
+        this.reminder = reminder;
     }
 
         public Boolean getPinned() {

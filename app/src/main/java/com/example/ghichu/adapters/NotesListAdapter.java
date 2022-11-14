@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -69,9 +70,18 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
         holder.textView_title.setSelected(true);
 
         holder.textView_notes.setText(list.get(position).getNotes());
-
+        holder.reminder_time.setText(list.get(position).getReminder());
         holder.textView_date.setText(list.get(position).getTimeCreate());
         holder.textView_date.setSelected(true);
+
+        if(String.valueOf(list.get(position).getReminder()).equals("null") || list.get(position).getReminder().isEmpty() || list.get(position).getReminder().trim().length()==0){
+            holder.reminder_container.setVisibility(View.INVISIBLE);
+            holder.reminder_container.getLayoutParams().height=0;
+        }else{
+            holder.reminder_container.setVisibility(View.VISIBLE);
+            holder.reminder_container.getLayoutParams().height=30;
+        }
+
         if(list.get(position).getPinned()){
             holder.imageView_pin.setImageResource(R.drawable.pin);
         }else{
@@ -116,8 +126,9 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
     public static class NotesViewHolder extends RecyclerView.ViewHolder{
 
         CardView notes_container;
-        TextView textView_title,textView_notes,textView_date;
+        TextView textView_title,textView_notes,textView_date, reminder_time;
         ImageView imageView_pin,imageView_img;
+        LinearLayout reminder_container;
 
         public NotesViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -127,6 +138,8 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
             textView_notes = itemView.findViewById(R.id.textView_notes);
             imageView_pin = itemView.findViewById(R.id.imageView_pin);
             imageView_img = itemView.findViewById(R.id.imageView_img);
+            reminder_time = itemView.findViewById(R.id.reminder_time);
+            reminder_container = itemView.findViewById(R.id.reminder_container);
         }
     }
 }

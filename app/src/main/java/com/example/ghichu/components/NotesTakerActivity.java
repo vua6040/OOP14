@@ -84,8 +84,8 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private ImageView imageView_back,imageView_img;
     private  Uri sImage;
     private ImageButton imageView_pin,imageView_timer,imageView_save;
-    private LinearLayout layout_body;
-    private TextView tvDate;
+    private LinearLayout layout_body, reminder_container;
+    private TextView tvDate, reminder_time;
     private TextView tvTime;
     private NotificationManager notificationManager;
     private int selectedMonth, selectedYear, selectedDay = 0;

@@ -98,6 +98,7 @@
             android:textSize="20sp"
             android:textStyle="normal" />
         <LinearLayout
+            android:id="@+id/reminder_container"
             android:layout_width="170dp"
             android:orientation="horizontal"
             android:background="@drawable/rounded_corner_cancel"
@@ -114,23 +115,13 @@
                 android:src="@drawable/alarm"
                 />
             <TextView
-                android:id="@+id/day"
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:text="Monday, "
-                android:textColor="@color/black"
-                android:textSize="18dp"
-                android:paddingLeft="8dp"
-                android:textAlignment="center"
-                />
-            <TextView
-                android:id="@+id/time"
+                android:id="@+id/reminder_time"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="18:00"
+                android:text="Monday, 18:00"
                 android:textColor="@color/black"
                 android:textSize="18dp"
-                android:textAlignment="textStart"
+                android:textAlignment="center"
                 />
         </LinearLayout>
     </LinearLayout>
