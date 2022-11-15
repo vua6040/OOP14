@@ -45,7 +45,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        // set the view of the activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
         // hide the navigation elements, i.e., status and navigation bar
@@ -59,44 +58,39 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
         // get the size of the display and initialise the CanvasView using the values
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         canvasView.initialise(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        canvasView.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
+        canvasView.setOnTouchListener((v, event) -> {
+            // pass the touch event to the scale gesture detector
+            scaleGestureDetector.onTouchEvent(event);
+            // differentiate between pressing down and up
+            switch (event.getAction())
             {
-                // pass the touch event to the scale gesture detector
-                scaleGestureDetector.onTouchEvent(event);
-                // differentiate between pressing down and up
-                switch (event.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        // hide UI elements if the user is pressing down
-                        handleUIElements(View.INVISIBLE);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        // display UI elements if the user is lifting up
-                        handleUIElements(View.VISIBLE);
-                        break;
-                }
-                // ensure that only one finger is being used and that a scale gesture is not in progress
-                if (event.getPointerCount() == 1 && !scaleGestureDetector.isInProgress())
-                {
-                    if (canvasView.getPreviousStrokeWidth() == canvasView.getStrokeWidth())
-                    {
-                        // provided the scale gesture wasn't completed just before, handle the touches as attempts
-                        // to draw on the canvas
-                        canvasView.handleTouches(event.getX(), event.getY(), event.getAction());
-                    } else
-                    {
-                        // ignore/remove any touches which were completed just after a scale gesture
-                        // as these are typically erroneous
-                        canvasView.undo();
-                    }
-                    // update the stroke width of the pen
-                    canvasView.setPreviousStrokeWidth(canvasView.getStrokeWidth());
-                }
-                return true;
+                case MotionEvent.ACTION_DOWN:
+                    // hide UI elements if the user is pressing down
+                    handleUIElements(View.INVISIBLE);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    // display UI elements if the user is lifting up
+                    handleUIElements(View.VISIBLE);
+                    break;
             }
+            // ensure that only one finger is being used and that a scale gesture is not in progress
+            if (event.getPointerCount() == 1 && !scaleGestureDetector.isInProgress())
+            {
+                if (canvasView.getPreviousStrokeWidth() == canvasView.getStrokeWidth())
+                {
+                    // provided the scale gesture wasn't completed just before, handle the touches as attempts
+                    // to draw on the canvas
+                    canvasView.handleTouches(event.getX(), event.getY(), event.getAction());
+                } else
+                {
+                    // ignore/remove any touches which were completed just after a scale gesture
+                    // as these are typically erroneous
+                    canvasView.undo();
+                }
+                // update the stroke width of the pen
+                canvasView.setPreviousStrokeWidth(canvasView.getStrokeWidth());
+            }
+            return true;
         });
         // set the click listeners for the UI buttons
         ImageButton clearButton = findViewById(R.id.clearButton);
@@ -130,15 +124,10 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
                 | View.SYSTEM_UI_FLAG_FULLSCREEN;
         // set the flags
         view.setSystemUiVisibility(flags);
-        view.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
-        {
-            @Override
-            public void onSystemUiVisibilityChange(int visibility)
-            {
-                // if the application is no longer full-screen, make it so
-                if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
-                    view.setSystemUiVisibility(flags);
-            }
+        view.setOnSystemUiVisibilityChangeListener(visibility -> {
+            // if the application is no longer full-screen, make it so
+            if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
+                view.setSystemUiVisibility(flags);
         });
     }
 
@@ -239,14 +228,9 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
         {
             // generate a new ColourPickerDialog to allow the user to change colour
             ColourPickerDialog dialog = new ColourPickerDialog(DrawingActivity.this, canvasView.getColour());
-            dialog.setOnDialogOptionSelectedListener(new ColourPickerDialog.ColourPickerOptionSelectedListener()
-            {
-                @Override
-                public void onColourPickerOptionSelected(int colour)
-                {
-                    // set the colour of the pen to the chosen colour via a callback
-                    canvasView.setColour(colour);
-                }
+            dialog.setOnDialogOptionSelectedListener(colour -> {
+                // set the colour of the pen to the chosen colour via a callback
+                canvasView.setColour(colour);
             });
             dialog.show();
         } else if (viewID == R.id.saveButton)
@@ -285,15 +269,10 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
             {
                 // display a rationale for saving (why the permission is needed)
                 StorageRationaleDialog dialog = new StorageRationaleDialog(DrawingActivity.this);
-                dialog.setOnStorageRationaleOptionSelectedListener(new StorageRationaleDialog.StorageRationaleOptionSelectedListener()
-                {
-                    @Override
-                    public void onStorageRationaleOptionSelected(boolean allow)
-                    {
-                        // if the user accepts the storage permission in the dialog, request it officially
-                        if (allow)
-                            requestStoragePermission();
-                    }
+                dialog.setOnStorageRationaleOptionSelectedListener(allow -> {
+                    // if the user accepts the storage permission in the dialog, request it officially
+                    if (allow)
+                        requestStoragePermission();
                 });
                 dialog.show();
             } else

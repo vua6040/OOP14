@@ -114,7 +114,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="32dp"
-        android:text="New User? Register Now"
+        android:text="OOP GROUP 14"
         android:textColor="@color/green_intro"
         android:textSize="18sp"
         android:textStyle="bold"

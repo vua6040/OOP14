@@ -94,12 +94,12 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private Calendar todayCalender;
     private Calendar selectedDate;
     private int mYear, mMonth, mDay, mHour, mMinute;
-    public static String APP_NAME = "Note App";
+    public static final String APP_NAME = "Note App";
     FirebaseStorage storage;
     NoteModel noteModel;
 
     private boolean isOldNote=false;
-    private boolean pinned=false;
+    private static boolean pinned=false;
 
     private ProgressDialog mProgressDialog;
 
@@ -177,12 +177,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                                 storageReference.getFile(file).addOnSuccessListener(taskSnapshot -> {
                                     Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                                     imageView_img.setImageBitmap(bitmap);
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(NotesTakerActivity.this,"Image faild to load",Toast.LENGTH_LONG).show();
-                                    }
-                                });
+                                }).addOnFailureListener(e -> Toast.makeText(NotesTakerActivity.this,"Image faild to load",Toast.LENGTH_LONG).show());
 
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -203,6 +198,9 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
 
         //CLICK PINNED
         imageView_pin.setOnClickListener(view -> {
+            if(isOldNote){
+                pinned=noteModel.getPinned();
+            }
             if(pinned){
                 pinned = false;
                 Toast.makeText(NotesTakerActivity.this,"Cancel Pinned",Toast.LENGTH_LONG).show();

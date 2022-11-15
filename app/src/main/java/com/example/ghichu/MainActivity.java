@@ -1,6 +1,7 @@
 package com.example.ghichu;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -14,6 +15,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     Button view_list;
 
-    private static Boolean toggle=true;
+    private static Boolean isToggle=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         updateRecycler(viewColumn);
         if(notes.size()==0){
             noteEmpty.setVisibility(View.VISIBLE);
+        }else{
+            noteEmpty.setVisibility(View.INVISIBLE);
         }
 
         //add note
@@ -225,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
 
-
     //Button
     public void drawing(View view){
         Intent clickDraw = new Intent(MainActivity.this, DrawingActivity.class);
@@ -244,16 +247,16 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     //toggle view
     public void toggleView(View view){
-        if(toggle) {
+        if(isToggle) {
             view_list.setBackgroundResource(R.drawable.verticals);
             viewColumn=1;
             updateRecycler(1);
-            toggle=false;
+            isToggle=false;
         }else{
             view_list.setBackgroundResource(R.drawable.grid);
             viewColumn=2;
             updateRecycler(2);
-            toggle=true;
+            isToggle=true;
         }
     }
 
@@ -265,10 +268,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             //WRITE_PERMISSION
             if(requestCode==101){
                 if(resultCode== Activity.RESULT_OK){
+                    noteEmpty.setVisibility(View.INVISIBLE);
                     GsonBuilder builder = new GsonBuilder();
                     builder.setPrettyPrinting();
                     Gson gson = builder.create();
-
                     NoteModel new_note = gson.fromJson((String) data.getSerializableExtra("newNote"),NoteModel.class);
                     notes.add(new_note);
                     Toast.makeText(MainActivity.this,"Add Note Success",Toast.LENGTH_LONG).show();
@@ -293,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                                             notes.add(note);
                                         }
                                     }
+
                                     Toast.makeText(MainActivity.this,"Unpinned",Toast.LENGTH_LONG).show();
                                     notesListAdapter.notifyDataSetChanged();
                                 }
@@ -309,6 +313,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                             Toast.makeText(MainActivity.this,"Unpinned Fail",Toast.LENGTH_LONG).show();
                         }
                     });
+                    updateRecycler(viewColumn);
                     notesListAdapter.notifyDataSetChanged();
                 }
             }
