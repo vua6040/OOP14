@@ -280,7 +280,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 }
             }else if(requestCode==102){
                 if(resultCode== Activity.RESULT_OK){
-                    NoteModel new_note = (NoteModel) data.getSerializableExtra("newNote");
+                    GsonBuilder builder = new GsonBuilder();
+                    builder.setPrettyPrinting();
+                    Gson gson = builder.create();
+                    NoteModel new_note = (NoteModel)gson.fromJson((String) data.getSerializableExtra("newNote"),NoteModel.class);
                     ApiService.apiService.updateNote(new_note).enqueue(new Callback<NoteModel>() {
                         @Override
                         public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {

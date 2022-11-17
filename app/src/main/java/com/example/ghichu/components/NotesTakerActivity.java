@@ -90,12 +90,8 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private Calendar todayCalender;
     private Calendar selectedDate;
     private int mYear, mMonth, mDay, mHour, mMinute;
-<<<<<<< Updated upstream
     public static final String APP_NAME = "Note App";
-=======
-    public static String APP_NAME = "Note App";
 
->>>>>>> Stashed changes
     FirebaseStorage storage;
     NoteModel noteModel;
 
@@ -244,6 +240,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             noteModel.setTimeCreate(formatter.format(date));
             noteModel.setNotes(description);
             noteModel.setUserId(DataLocalManager.getFirstUser());
+            noteModel.setReminder("");
 
             showNotification();
             //CALL API ADD NOTE
@@ -282,12 +279,12 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                 });
             }
 
-            //TAKE A PICTURE
-            textView_take_photo.setOnClickListener(view1 -> {
-                Intent take = new Intent(NotesTakerActivity.this, CameraPicture.class);
-                startActivity(take);
-            });
+        });
 
+        //TAKE A PICTURE
+        textView_take_photo.setOnClickListener(view1 -> {
+            Intent take = new Intent(NotesTakerActivity.this, CameraPicture.class);
+            startActivity(take);
         });
 
         //IMAGE FROM CAMERA PICTURE
