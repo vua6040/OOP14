@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Ghi chu</string>
-
+    <string name="channel_name">Chanel1</string>
+    <string name="channel_description">This is description</string>
     <string name="navigation_open">Open Navigation drawer</string>
     <string name="navigation_close">Close Navigation drawer</string>
 

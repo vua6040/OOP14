@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
 
 import com.example.ghichu.CameraPicture;
 import com.example.ghichu.MainActivity;
@@ -16,8 +17,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -29,8 +32,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -41,38 +42,31 @@ import android.widget.Toast;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class NotesTakerActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, DatePickerDialog.OnDateSetListener {
+public class NotesTakerActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     private static final int MY_REQUEST_CODE = 10;
     private static Boolean isImgFCamera=false;
@@ -87,6 +81,8 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private LinearLayout layout_body, reminder_container;
     private TextView tvDate, reminder_time;
     private TextView tvTime;
+    private TextView btnSave;
+    private TextView btnCancel;
     private NotificationManager notificationManager;
     private int selectedMonth, selectedYear, selectedDay = 0;
     private boolean isSelectTime = false;
@@ -94,7 +90,12 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private Calendar todayCalender;
     private Calendar selectedDate;
     private int mYear, mMonth, mDay, mHour, mMinute;
+<<<<<<< Updated upstream
     public static final String APP_NAME = "Note App";
+=======
+    public static String APP_NAME = "Note App";
+
+>>>>>>> Stashed changes
     FirebaseStorage storage;
     NoteModel noteModel;
 
@@ -141,6 +142,8 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
         editText_notes = findViewById(R.id.editText_notes);
         editText_title = findViewById(R.id.editText_title);
         imageView_back = findViewById(R.id.imageView_back);
+        btnCancel = findViewById(R.id.btn_cancel);
+        btnSave = findViewById(R.id.btn_save);
         layout_body = findViewById(R.id.layout_body);
         imageView_timer=findViewById(R.id.imageView_timer);
         cardView_reminder=findViewById(R.id.cardView_reminder);
@@ -242,6 +245,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             noteModel.setNotes(description);
             noteModel.setUserId(DataLocalManager.getFirstUser());
 
+            showNotification();
             //CALL API ADD NOTE
             if(description.isEmpty()&&title.isEmpty()&&(sImage==null || String.valueOf(sImage).isEmpty())){
                 Log.e("save","Error");
@@ -326,7 +330,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void onClickRequestPermission() {
-        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.O){
             cardView.setVisibility(View.INVISIBLE);
             model_card.setTranslationY(2000);
             openGallery();
@@ -366,9 +370,9 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     }
 
     //Cancel Edit calender
-    public void btnCancel(View view){
-        cardView_reminder.setVisibility(View.INVISIBLE);
-    }
+//    public void btnCancel(View view){
+//        cardView_reminder.setVisibility(View.INVISIBLE);
+//    }
 
     public void picture(View view){
         int visible=cardView.getVisibility();
@@ -396,11 +400,19 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.btn_cancel:
+                cancelNotification();
+                cardView_reminder.setVisibility(View.INVISIBLE);
+            case R.id.btn_save:
+//                showNotification();
+                cardView_reminder.setVisibility(View.INVISIBLE);
+                break;
             case R.id.textView_take_photo:
                 Intent i = new Intent(NotesTakerActivity.this, CameraPicture.class);
                 startActivity(i);
                 break;
             case R.id.tv_date:
+
                 selectDate();
                 break;
             case R.id.tv_time:
@@ -417,9 +429,14 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
 
         tvDate = findViewById(R.id.tv_date);
         tvTime = findViewById(R.id.tv_time);
+        btnSave = findViewById(R.id.btn_save);
+        btnCancel = findViewById(R.id.btn_cancel);
         //Listeners
         tvDate.setOnClickListener( this :: onClick);
         tvTime.setOnClickListener(this :: onClick);
+        btnSave.setOnClickListener(this :: onClick);
+        btnCancel.setOnClickListener(this :: onClick);
+
 
     }
 
@@ -507,11 +524,8 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             Toast.makeText(this, "Select Valid Date !", Toast.LENGTH_SHORT).show();
         }
     }
-
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-    }
-
+    private AlarmManager alarmManager;
+    private PendingIntent pendingIntent;
     public void scheduleNotification(Context context, long delay, String title, String message) {//delay is after how much time(in millis) from current time you want to schedule the notification
 
         int randomNotificationId = true ? (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE) : 0;
@@ -524,9 +538,37 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
         notificationIntent.putExtra(MyNotificationPublisher.KEY_MESSAGE, message);
         notificationIntent.putExtra(MyNotificationPublisher.KEY_TITLE, title);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, randomNotificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        pendingIntent = PendingIntent.getBroadcast(context, randomNotificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         long futureInMillis = SystemClock.elapsedRealtime() + delay;
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
+
+    private void showNotification() {
+        if (TextUtils.isEmpty(editText_title.getText())) {
+
+            editText_title.setError("Please enter Message!");
+            return;
+        }
+        if (isSelectDate && isSelectTime) {
+            long diffInMs = selectedDate.getTimeInMillis() - todayCalender.getTimeInMillis();
+            long diffInSec = TimeUnit.MILLISECONDS.toMillis(diffInMs);
+            scheduleNotification(this, diffInSec, "Note App", editText_title.getText().toString());
+        } else {
+            Toast.makeText(this, "Select a valid date and time!", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void cancelNotification() {
+        Intent intent = new Intent(this, MyNotificationPublisher.class);
+        pendingIntent = PendingIntent.getBroadcast(this,0,intent,0);
+        if(alarmManager == null) {
+            alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        }
+        alarmManager.cancel(pendingIntent);
+        Toast.makeText(this, "Cancel Reminder!",Toast.LENGTH_SHORT).show();
+    }
+
+
 }
