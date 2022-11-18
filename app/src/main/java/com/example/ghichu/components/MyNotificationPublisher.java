@@ -12,16 +12,6 @@ import androidx.core.app.NotificationCompat;
 import com.example.ghichu.R;
 
 public class MyNotificationPublisher extends BroadcastReceiver {
-<<<<<<< Updated upstream
-    public static final String NOTIFICATION_ID = "notification_id";
-    public static final String KEY_MESSAGE = "key_message";
-    public static final String KEY_TITLE = "key_title";
-    public static final String KEY_EXPAND = "key_expand";
-    public static final String KEY_SOUND = "key_sound";
-    public static final String KEY_MULTIPLE = "key_multiple";
-    public static final String CHANNEL_ID = "channel_id";
-    public static final String APP_NAME = "NotificationApp";
-=======
     public static String NOTIFICATION_ID = "notification_id";
     public static String KEY_MESSAGE = "key_message";
     public static String KEY_TITLE = "key_title";
@@ -30,7 +20,6 @@ public class MyNotificationPublisher extends BroadcastReceiver {
     public static String KEY_MULTIPLE = "key_multiple";
     public static String CHANNEL_ID = "Chanel_1";
     public static String APP_NAME = "NotificationApp";
->>>>>>> Stashed changes
 
     @Override
     public void onReceive(final Context context, Intent intent) {

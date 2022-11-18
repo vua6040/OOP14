@@ -90,12 +90,8 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private Calendar todayCalender;
     private Calendar selectedDate;
     private int mYear, mMonth, mDay, mHour, mMinute;
-<<<<<<< Updated upstream
-    public static final String APP_NAME = "Note App";
-=======
     public static String APP_NAME = "Note App";
 
->>>>>>> Stashed changes
     FirebaseStorage storage;
     NoteModel noteModel;
 
