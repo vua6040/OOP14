@@ -24,6 +24,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -326,7 +327,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void onClickRequestPermission() {
-        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.O){
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
             cardView.setVisibility(View.INVISIBLE);
             model_card.setTranslationY(2000);
             openGallery();
@@ -492,8 +493,8 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private void createNotificationChannel() {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "channel_name";
-            String description = "channel_description";
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(APP_NAME, name, importance);
             channel.setDescription(description);
@@ -523,8 +524,16 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
     public void scheduleNotification(Context context, long delay, String title, String message) {//delay is after how much time(in millis) from current time you want to schedule the notification
-
         int randomNotificationId = true ? (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE) : 0;
+
+        Intent resultIntent = new Intent(this, NotesTakerActivity.class);
+// Create the TaskStackBuilder and add the intent, which inflates the back stack
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+// Get the PendingIntent containing the entire back stack
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(randomNotificationId,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Intent notificationIntent = new Intent(context, MyNotificationPublisher.class);
         notificationIntent.putExtra(MyNotificationPublisher.NOTIFICATION_ID, randomNotificationId);
@@ -533,6 +542,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
         notificationIntent.putExtra(MyNotificationPublisher.KEY_SOUND, true);
         notificationIntent.putExtra(MyNotificationPublisher.KEY_MESSAGE, message);
         notificationIntent.putExtra(MyNotificationPublisher.KEY_TITLE, title);
+        MyNotificationPublisher.resultIntent = resultPendingIntent;
 
         pendingIntent = PendingIntent.getBroadcast(context, randomNotificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         long futureInMillis = SystemClock.elapsedRealtime() + delay;
@@ -564,6 +574,11 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
         }
         alarmManager.cancel(pendingIntent);
         Toast.makeText(this, "Cancel Reminder!",Toast.LENGTH_SHORT).show();
+    }
+
+    private void clickBtnSave() {
+//        String txt = tvDate.toString()+tvTime.toStirng();
+//        reminder_time.setText(txt);
     }
 
 

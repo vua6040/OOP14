@@ -62,7 +62,9 @@
         <activity
             android:name=".components.NotesTakerActivity"
             android:exported="false"
-            android:theme="@style/Theme.GhiChu.NoActionBar" />
+            android:theme="@style/Theme.GhiChu.NoActionBar"
+            android:parentActivityName=".MainActivity"/>
+
         <activity
             android:name=".IntroductionActivity"
             android:exported="true"
