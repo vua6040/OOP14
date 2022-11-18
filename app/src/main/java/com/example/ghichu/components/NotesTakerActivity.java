@@ -177,7 +177,6 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                                     Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                                     imageView_img.setImageBitmap(bitmap);
                                 }).addOnFailureListener(e -> Toast.makeText(NotesTakerActivity.this,"Image faild to load",Toast.LENGTH_LONG).show());
-
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
