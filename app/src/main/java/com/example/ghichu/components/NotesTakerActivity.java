@@ -177,7 +177,6 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                                     Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                                     imageView_img.setImageBitmap(bitmap);
                                 }).addOnFailureListener(e -> Toast.makeText(NotesTakerActivity.this,"Image faild to load",Toast.LENGTH_LONG).show());
-
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -240,6 +239,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             noteModel.setTimeCreate(formatter.format(date));
             noteModel.setNotes(description);
             noteModel.setUserId(DataLocalManager.getFirstUser());
+            noteModel.setReminder("");
 
             showNotification();
             //CALL API ADD NOTE
@@ -278,12 +278,12 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                 });
             }
 
-            //TAKE A PICTURE
-            textView_take_photo.setOnClickListener(view1 -> {
-                Intent take = new Intent(NotesTakerActivity.this, CameraPicture.class);
-                startActivity(take);
-            });
+        });
 
+        //TAKE A PICTURE
+        textView_take_photo.setOnClickListener(view1 -> {
+            Intent take = new Intent(NotesTakerActivity.this, CameraPicture.class);
+            startActivity(take);
         });
 
         //IMAGE FROM CAMERA PICTURE
