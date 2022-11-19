@@ -18,15 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ghichu.NotesClickListener;
 import com.example.ghichu.R;
 import com.example.ghichu.models.NoteModel;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -66,11 +65,13 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
                 e.printStackTrace();
             }
         }
+
+
         holder.textView_title.setText(list.get(position).getTitle());
         holder.textView_title.setSelected(true);
 
         holder.textView_notes.setText(list.get(position).getNotes());
-        holder.reminder_time.setText(list.get(position).getReminder());
+        holder.text_reminder_time.setText(list.get(position).getReminder());
         holder.textView_date.setText(list.get(position).getTimeCreate());
         holder.textView_date.setSelected(true);
 
@@ -78,8 +79,45 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
             holder.reminder_container.setVisibility(View.INVISIBLE);
             holder.reminder_container.getLayoutParams().height=0;
         }else{
-            holder.reminder_container.setVisibility(View.VISIBLE);
-            holder.reminder_container.getLayoutParams().height=30;
+            String[] timeReminder = list.get(position).getReminder().split(",");
+            boolean isShow = true;
+            int month = Integer.parseInt(timeReminder[1].substring(0,2));
+            int day = Integer.parseInt(timeReminder[1].substring(3,5));
+            int year = Integer.parseInt(timeReminder[1].substring(6));
+            Date date= new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            //Getting the current day
+            int currentDay = cal.get(Calendar.DAY_OF_MONTH);
+            //Getting the current month
+            int currentMonth = cal.get(Calendar.MONTH)+1;
+
+            //getting the current year
+            int currentYear = cal.get(Calendar.YEAR);
+            System.out.format("%d %d %d %d %d %d",day,month,year,currentDay,currentMonth,currentYear);
+            if(year<currentYear){
+                list.get(position).setReminder("");
+                isShow=false;
+            }else{
+                if(month<currentMonth){
+                    list.get(position).setReminder("");
+                    isShow=false;
+
+                }else{
+                    if(day<currentDay){
+                        list.get(position).setReminder("");
+                        isShow=false;
+
+                    }
+                }
+            }
+            if(isShow){
+                holder.reminder_container.setVisibility(View.VISIBLE);
+                holder.reminder_container.getLayoutParams().height=100;
+            }else{
+                holder.reminder_container.setVisibility(View.INVISIBLE);
+                holder.reminder_container.getLayoutParams().height=0;
+            }
         }
 
         if(list.get(position).getPinned()){
@@ -126,7 +164,7 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
     public static class NotesViewHolder extends RecyclerView.ViewHolder{
 
         CardView notes_container;
-        TextView textView_title,textView_notes,textView_date, reminder_time;
+        TextView textView_title,textView_notes,textView_date, text_reminder_time;
         ImageView imageView_pin,imageView_img;
         LinearLayout reminder_container;
 
@@ -138,7 +176,7 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
             textView_notes = itemView.findViewById(R.id.textView_notes);
             imageView_pin = itemView.findViewById(R.id.imageView_pin);
             imageView_img = itemView.findViewById(R.id.imageView_img);
-            reminder_time = itemView.findViewById(R.id.reminder_time);
+            text_reminder_time = itemView.findViewById(R.id.text_reminder_time);
             reminder_container = itemView.findViewById(R.id.reminder_container);
         }
     }

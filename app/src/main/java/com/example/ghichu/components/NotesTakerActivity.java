@@ -90,7 +90,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
     private boolean isSelectDate = false;
     private Calendar todayCalender;
     private Calendar selectedDate;
-    private int mYear, mMonth, mDay, mHour, mMinute;
+    private int mYear, mMonth, mDay, mHour, mMinute, mDateOfWeek;
     public static String APP_NAME = "Note App";
 
     FirebaseStorage storage;
@@ -142,6 +142,9 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
         btnCancel = findViewById(R.id.btn_cancel);
         btnSave = findViewById(R.id.btn_save);
         layout_body = findViewById(R.id.layout_body);
+
+        reminder_container=findViewById(R.id.reminder_container);
+        reminder_time=findViewById(R.id.reminder_time);
         imageView_timer=findViewById(R.id.imageView_timer);
         cardView_reminder=findViewById(R.id.cardView_reminder);
 
@@ -168,8 +171,17 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
                         noteModel = response.body();
+
                         editText_title.setText(noteModel.getTitle());
                         editText_notes.setText(noteModel.getNotes());
+                        reminder_time.setText(noteModel.getReminder());
+
+                        if(reminder_time.getText().toString().equals("null") || reminder_time.getText().toString().isEmpty() || reminder_time.getText().toString().trim().length()==0){
+                            reminder_container.setVisibility(View.INVISIBLE);
+                        }else{
+                            reminder_container.setVisibility(View.VISIBLE);
+                        }
+
                         if(!noteModel.getImg().isEmpty()){
                             StorageReference storageReference = storage.getReferenceFromUrl("gs://ghi-chu-8944e.appspot.com/images/").child(noteModel.getImg());
                             try {
@@ -195,6 +207,13 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             Log.e("Note Old","not selected yet");
         }
 
+        // show or hidden reminder
+        if(reminder_time.getText().toString().equals("null") || reminder_time.getText().toString().isEmpty() || reminder_time.getText().toString().trim().length()==0){
+            reminder_container.setVisibility(View.INVISIBLE);
+        }else{
+            reminder_container.setVisibility(View.VISIBLE);
+        }
+
         //CLICK PINNED
         imageView_pin.setOnClickListener(view -> {
             if(isOldNote){
@@ -214,6 +233,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             mProgressDialog.show();
             String title = editText_title.getText().toString().trim();
             String description = editText_notes.getText().toString().trim();
+            String reminder = reminder_time.getText().toString().trim();
 
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm a");
             Date date = new Date();
@@ -240,7 +260,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             noteModel.setTimeCreate(formatter.format(date));
             noteModel.setNotes(description);
             noteModel.setUserId(DataLocalManager.getFirstUser());
-            noteModel.setReminder("");
+            noteModel.setReminder(reminder);
 
             showNotification();
             //CALL API ADD NOTE
@@ -366,11 +386,6 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
         model_card.animate().translationY(1660).setDuration(500).setStartDelay(500);
     }
 
-    //Cancel Edit calender
-//    public void btnCancel(View view){
-//        cardView_reminder.setVisibility(View.INVISIBLE);
-//    }
-
     public void picture(View view){
         int visible=cardView.getVisibility();
         if(visible==4)
@@ -402,6 +417,41 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                 cardView_reminder.setVisibility(View.INVISIBLE);
             case R.id.btn_save:
 //                showNotification();
+                String mDayOfWeek = "";
+                switch (mDateOfWeek){
+                    case 2:
+                        mDayOfWeek="Monday";
+                        break;
+                    case 3:
+                        mDayOfWeek="Tuesday";
+                        break;
+                    case 4:
+                        mDayOfWeek="Wednesday";
+                        break;
+                    case 5:
+                        mDayOfWeek="Thursday";
+                        break;
+                    case 6:
+                        mDayOfWeek="Friday";
+                        break;
+                    case 7:
+                        mDayOfWeek="Saturday";
+                        break;
+                    case 8:
+                        mDayOfWeek="Sunday";
+                        break;
+                }
+                String setDate = mDayOfWeek+","+tvDate.getText()+","+tvTime.getText().toString();
+
+                if(isSelectDate){
+                     reminder_time.setText(setDate);
+                }
+                System.out.println(setDate);
+                if(reminder_time.getText().toString().equals("null") || reminder_time.getText().toString().isEmpty() || reminder_time.getText().toString().trim().length()==0){
+                    reminder_container.setVisibility(View.INVISIBLE);
+                }else{
+                    reminder_container.setVisibility(View.VISIBLE);
+                }
                 cardView_reminder.setVisibility(View.INVISIBLE);
                 break;
             case R.id.textView_take_photo:
@@ -439,6 +489,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
 
     private void selectDate() {
         todayCalender = Calendar.getInstance();
+        mDateOfWeek = todayCalender.get(Calendar.DAY_OF_WEEK);
         mYear = todayCalender.get(Calendar.YEAR);
         mMonth = todayCalender.get(Calendar.MONTH);
         mDay = todayCalender.get(Calendar.DAY_OF_MONTH);
@@ -513,7 +564,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
         if(isValidDate(todayCalender.getTime().toString(), cal.getTime().toString())) {
-            tvDate.setText(String.format("%s - %s - %s", dayOfMonth, month+1, year));
+            tvDate.setText(String.format("%s/%s/%s", month+1, dayOfMonth, year));
             isSelectDate = true;
             selectTime();
         } else {
@@ -575,11 +626,5 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
         alarmManager.cancel(pendingIntent);
         Toast.makeText(this, "Cancel Reminder!",Toast.LENGTH_SHORT).show();
     }
-
-    private void clickBtnSave() {
-//        String txt = tvDate.toString()+tvTime.toStirng();
-//        reminder_time.setText(txt);
-    }
-
 
 }
