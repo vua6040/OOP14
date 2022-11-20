@@ -443,23 +443,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     }
                 });
                 return true;
-            case R.id.clone:
-                ApiService.apiService.addNote(selectedNote).enqueue(new Callback<NoteModel>() {
-                    @Override
-                    public void onResponse(Call<NoteModel> call, Response<NoteModel> response) {
-                        notes.add(response.body());
-                        System.out.println(selectedNote.getNotes());
-                        Toast.makeText(MainActivity.this, "Clone success", Toast.LENGTH_LONG).show();
-                        notesListAdapter.notifyDataSetChanged();
-                        updateRecycler(viewColumn);
-                    }
-
-                    @Override
-                    public void onFailure(Call<NoteModel> call, Throwable t) {
-                        Toast.makeText(MainActivity.this, "Clone Fail", Toast.LENGTH_LONG).show();
-                    }
-                });
-                return true;
             default:
                 return false;
         }
