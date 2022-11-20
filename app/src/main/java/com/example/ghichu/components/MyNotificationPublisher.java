@@ -22,6 +22,7 @@ public class MyNotificationPublisher extends BroadcastReceiver {
     public static String CHANNEL_ID = "1";
     public static String APP_NAME = "Note App";
     public static PendingIntent resultIntent = null;
+
     @Override
     public void onReceive(final Context context, Intent intent) {
 
@@ -44,14 +45,14 @@ public class MyNotificationPublisher extends BroadcastReceiver {
                 .setChannelId(APP_NAME)
                 .setContentIntent(resultIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-            builder.setStyle(new NotificationCompat.BigTextStyle()
-                    .bigText(message));
+        builder.setStyle(new NotificationCompat.BigTextStyle()
+                .bigText(message));
 
-            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            builder.setSound(alarmSound);
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(alarmSound);
 
-            builder.setGroup(APP_NAME);
-            builder.setGroupSummary(true);
+        builder.setGroup(APP_NAME);
+        builder.setGroupSummary(true);
 
         notificationManager.notify(notificationId, builder.build());
     }

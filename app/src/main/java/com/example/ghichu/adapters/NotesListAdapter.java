@@ -84,17 +84,22 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
             int month = Integer.parseInt(timeReminder[1].substring(0,2));
             int day = Integer.parseInt(timeReminder[1].substring(3,5));
             int year = Integer.parseInt(timeReminder[1].substring(6));
+
+            String[] handm= timeReminder[2].split(":");
+            int hour = Integer.parseInt(handm[0]);
+            int minute = Integer.parseInt(handm[1]);
+
             Date date= new Date();
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
-            //Getting the current day
-            int currentDay = cal.get(Calendar.DAY_OF_MONTH);
-            //Getting the current month
-            int currentMonth = cal.get(Calendar.MONTH)+1;
 
-            //getting the current year
+            int currentDay = cal.get(Calendar.DAY_OF_MONTH);
+            int currentMonth = cal.get(Calendar.MONTH)+1;
             int currentYear = cal.get(Calendar.YEAR);
-            System.out.format("%d %d %d %d %d %d",day,month,year,currentDay,currentMonth,currentYear);
+            int currentHour = cal.get(Calendar.HOUR_OF_DAY);
+            int currentMinute = cal.get(Calendar.MINUTE);
+
+            //check expired note reminder
             if(year<currentYear){
                 list.get(position).setReminder("");
                 isShow=false;
@@ -107,10 +112,21 @@ public class NotesListAdapter extends  RecyclerView.Adapter<NotesListAdapter.Not
                     if(day<currentDay){
                         list.get(position).setReminder("");
                         isShow=false;
+                    }else {
+                        if (hour < currentHour) {
+                            list.get(position).setReminder("");
+                            isShow = false;
 
+                        }else{
+                            if (minute < currentMinute) {
+                                list.get(position).setReminder("");
+                                isShow = false;
+                            }
+                        }
                     }
                 }
             }
+
             if(isShow){
                 holder.reminder_container.setVisibility(View.VISIBLE);
                 holder.reminder_container.getLayoutParams().height=100;

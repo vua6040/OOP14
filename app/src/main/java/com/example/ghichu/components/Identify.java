@@ -27,10 +27,10 @@ public class Identify extends AppCompatActivity {
     private EditText edtUsername, edtPassWord;
     private Button btnLogin;
     private Boolean isGetApiSuccess = true;
-    private String userId="-2";
-    private String Idmax="0";
+    private String userId = "-2";
+    private String Idmax = "0";
     private UserModel user = new UserModel();
-    private  Boolean isExist = false;
+    private Boolean isExist = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +38,9 @@ public class Identify extends AppCompatActivity {
         setContentView(R.layout.activity_identify);
 
         users = new ArrayList<>();
-        edtUsername= findViewById(R.id.inputUsername);
-        edtPassWord= findViewById(R.id.inputPassword);
-        btnLogin= findViewById(R.id.btnLogin);
+        edtUsername = findViewById(R.id.inputUsername);
+        edtPassWord = findViewById(R.id.inputPassword);
+        btnLogin = findViewById(R.id.btnLogin);
 
         ApiService.apiService.getUsers().enqueue(new Callback<List<UserModel>>() {
             @Override
@@ -50,7 +50,7 @@ public class Identify extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<UserModel>> call, Throwable t) {
-                Toast.makeText(Identify.this,"Server Error",Toast.LENGTH_LONG).show();
+                Toast.makeText(Identify.this, "Server Error", Toast.LENGTH_LONG).show();
                 isGetApiSuccess = false;
             }
         });
@@ -60,58 +60,59 @@ public class Identify extends AppCompatActivity {
             String password = edtPassWord.getText().toString().trim();
             user.setUsername(username);
             user.setPassword(password);
-            for(UserModel u:users){
-                if(u.getPassword().trim().equals(password) && u.getUsername().trim().equals(username)){
+            for (UserModel u : users) {
+                if (u.getPassword().trim().equals(password) && u.getUsername().trim().equals(username)) {
                     userId = String.valueOf(u.getId());
                     isExist = true;
                     break;
                 }
             }
-            if(!users.isEmpty()&&users.size()>0){
-                Idmax = String.valueOf(users.get(users.size()-1).getId());
-            }else{
-                Idmax="0";
+            if (!users.isEmpty() && users.size() > 0) {
+                Idmax = String.valueOf(users.get(users.size() - 1).getId());
+            } else {
+                Idmax = "0";
             }
 
-            System.out.println("listId "+DataLocalManager.getListUserAccountId());
-            System.out.println("IDLOCAL:"+DataLocalManager.getFirstUser());
-            System.out.println("userid:"+userId);
-            System.out.println("isExist:"+isExist);
+            System.out.println("listId " + DataLocalManager.getListUserAccountId());
+            System.out.println("IDLOCAL:" + DataLocalManager.getFirstUser());
+            System.out.println("userid:" + userId);
+            System.out.println("isExist:" + isExist);
 
             List<String> userIds = new ArrayList<>();
             userIds.addAll(DataLocalManager.getListUserAccountId());
-            if(userIds.contains(userId)){
+            if (userIds.contains(userId)) {
                 DataLocalManager.setListUserAccountId(userId);
-                if(!userId.equals(DataLocalManager.getFirstUser())){
+                if (!userId.equals(DataLocalManager.getFirstUser())) {
                     DataLocalManager.setFirstUser(userId);
                 }
-                Intent i = new Intent(Identify.this,MainActivity.class);
+                Intent i = new Intent(Identify.this, MainActivity.class);
                 startActivity(i);
-            }else{
+            } else {
                 DataLocalManager.setListUserAccountId(userId);
             }
 
-            if(!userId.equals(DataLocalManager.getFirstUser()) || Integer.parseInt(userId)<=0){
-                if(isExist){
-                    Toast.makeText(getApplicationContext(),"User Exist!",Toast.LENGTH_LONG).show();
+            if (!userId.equals(DataLocalManager.getFirstUser()) || Integer.parseInt(userId) <= 0) {
+                if (isExist) {
+                    Toast.makeText(getApplicationContext(), "User Exist!", Toast.LENGTH_LONG).show();
                     return;
                 }
                 System.out.println(1);
-                if(isGetApiSuccess && (username.length() != 0) && (password.length() != 0)){
+                if (isGetApiSuccess && (username.length() != 0) && (password.length() != 0)) {
                     ApiService.apiService.addUser(user).enqueue(new Callback<UserModel>() {
                         @Override
                         public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                            DataLocalManager.setFirstUser(String.valueOf(Integer.parseInt(Idmax)+1));
-                            Intent i = new Intent(Identify.this,MainActivity.class);
+                            DataLocalManager.setFirstUser(String.valueOf(Integer.parseInt(Idmax) + 1));
+                            Intent i = new Intent(Identify.this, MainActivity.class);
                             startActivity(i);
                         }
+
                         @Override
                         public void onFailure(Call<UserModel> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(),"Server Error!",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Server Error!", Toast.LENGTH_LONG).show();
                         }
                     });
-                }else{
-                    Toast.makeText(getApplicationContext(),"Username or Password Fail!",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Username or Password Fail!", Toast.LENGTH_LONG).show();
                 }
             }
         });

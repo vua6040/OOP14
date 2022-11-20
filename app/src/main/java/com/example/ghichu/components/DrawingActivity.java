@@ -2,6 +2,7 @@ package com.example.ghichu.components;
 
 import android.content.Context;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -43,8 +44,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
         // hide the navigation elements, i.e., status and navigation bar
@@ -62,8 +62,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
             // pass the touch event to the scale gesture detector
             scaleGestureDetector.onTouchEvent(event);
             // differentiate between pressing down and up
-            switch (event.getAction())
-            {
+            switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     // hide UI elements if the user is pressing down
                     handleUIElements(View.INVISIBLE);
@@ -74,15 +73,12 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
                     break;
             }
             // ensure that only one finger is being used and that a scale gesture is not in progress
-            if (event.getPointerCount() == 1 && !scaleGestureDetector.isInProgress())
-            {
-                if (canvasView.getPreviousStrokeWidth() == canvasView.getStrokeWidth())
-                {
+            if (event.getPointerCount() == 1 && !scaleGestureDetector.isInProgress()) {
+                if (canvasView.getPreviousStrokeWidth() == canvasView.getStrokeWidth()) {
                     // provided the scale gesture wasn't completed just before, handle the touches as attempts
                     // to draw on the canvas
                     canvasView.handleTouches(event.getX(), event.getY(), event.getAction());
-                } else
-                {
+                } else {
                     // ignore/remove any touches which were completed just after a scale gesture
                     // as these are typically erroneous
                     canvasView.undo();
@@ -112,8 +108,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
         shareButton.setOnClickListener(this);
     }
 
-    private void hideUINavigation()
-    {
+    private void hideUINavigation() {
         // retrieve the View and define the flags
         final View view = getWindow().getDecorView();
         final int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -131,17 +126,14 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private ScaleHandler createScaleHandler()
-    {
+    private ScaleHandler createScaleHandler() {
         // retrieve the UI pen icon which is used to represent changes in pen size
         ImageView penIcon = findViewById(R.id.penSizeIcon);
         // create a new ScaleHandler object and attach a scale changed listener
         ScaleHandler scaleHandler = new ScaleHandler();
-        scaleHandler.setOnScaleChangedListener(new ScaleHandler.ScaleChangedListener()
-        {
+        scaleHandler.setOnScaleChangedListener(new ScaleHandler.ScaleChangedListener() {
             @Override
-            public GradientDrawable onScaleIconRequired()
-            {
+            public GradientDrawable onScaleIconRequired() {
                 // retrieve the pen icon as a GradientDrawable object
                 GradientDrawable gradientDrawable = (GradientDrawable) penIcon.getBackground();
                 gradientDrawable.setColor(canvasView.getColour());
@@ -150,27 +142,23 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             @Override
-            public Context getContext()
-            {
+            public Context getContext() {
                 return DrawingActivity.this;
             }
 
             @Override
-            public Resources getContextResources()
-            {
+            public Resources getContextResources() {
                 return getResources();
             }
 
             @Override
-            public void onScaleStarted()
-            {
+            public void onScaleStarted() {
                 // display the pen icon
                 penIcon.setVisibility(View.VISIBLE);
             }
 
             @Override
-            public void onScaleChanged(float scaleFactor)
-            {
+            public void onScaleChanged(float scaleFactor) {
                 // if the user has scaled to the minimum or maximum size, adjust the size to be one less to ensure
                 // that the previous stroke width is different from the current to prevent erroneous drawing
                 if (scaleFactor == ScaleHandler.MIN_WIDTH || scaleFactor == ScaleHandler.MAX_WIDTH)
@@ -185,8 +173,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             @Override
-            public void onScaleEnded()
-            {
+            public void onScaleEnded() {
                 // hide the pen icon
                 penIcon.setVisibility(View.GONE);
             }
@@ -194,13 +181,11 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
         return scaleHandler;
     }
 
-    private void handleUIElements (int showType)
-    {
+    private void handleUIElements(int showType) {
         // get the view elements as a ViewGroup
         ViewGroup viewGroup = findViewById(R.id.container);
         // loop through each element
-        for (int i = 0; i < viewGroup.getChildCount(); i++)
-        {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View view = viewGroup.getChildAt(i);
             // if the view is not the canvas or the pen size icon, hide/show it
             if (view.getId() != R.id.canvasView && view.getId() != R.id.penSizeIcon)
@@ -212,20 +197,16 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         int viewID = v.getId();
 
-        if (viewID == R.id.clearButton)
-        {
+        if (viewID == R.id.clearButton) {
             // clear the canvas
             canvasView.clear();
-        } else if (viewID == R.id.undoButton)
-        {
+        } else if (viewID == R.id.undoButton) {
             // undo the most recent drawing action
             canvasView.undo();
-        } else if (viewID == R.id.redoButton)
-        {
+        } else if (viewID == R.id.redoButton) {
             // redraw the most recently undone action
             canvasView.redo();
-        } else if (viewID == R.id.styleButton)
-        {
+        } else if (viewID == R.id.styleButton) {
             // generate a new ColourPickerDialog to allow the user to change colour
             ColourPickerDialog dialog = new ColourPickerDialog(DrawingActivity.this, canvasView.getColour());
             dialog.setOnDialogOptionSelectedListener(colour -> {
@@ -233,40 +214,34 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
                 canvasView.setColour(colour);
             });
             dialog.show();
-        } else if (viewID == R.id.saveButton)
-        {
+        } else if (viewID == R.id.saveButton) {
             // set the export type to save and then check for permission
             canvasExporter.setExportType(CanvasExporter.FLAG_SAVE);
             checkForPermissions();
-        } else if (viewID == R.id.shareButton)
-        {
+        } else if (viewID == R.id.shareButton) {
             // set the export type to share and then check for permission
             canvasExporter.setExportType(CanvasExporter.FLAG_SHARE);
             checkForPermissions();
         }
     }
 
-    private void requestStoragePermission ()
-    {
+    private void requestStoragePermission() {
         String permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
         // request the permission to write to storage
         ActivityCompat.requestPermissions(this, new String[]{permission},
                 CanvasExporter.PERMISSION_WRITE_EXTERNAL_STORAGE);
     }
 
-    private void checkForPermissions()
-    {
+    private void checkForPermissions() {
         int permission = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (permission == PackageManager.PERMISSION_DENIED)
-        {
+        if (permission == PackageManager.PERMISSION_DENIED) {
             // if the user has not granted permission
             boolean shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
                     this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-            if (shouldShowRationale)
-            {
+            if (shouldShowRationale) {
                 // display a rationale for saving (why the permission is needed)
                 StorageRationaleDialog dialog = new StorageRationaleDialog(DrawingActivity.this);
                 dialog.setOnStorageRationaleOptionSelectedListener(allow -> {
@@ -275,32 +250,26 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
                         requestStoragePermission();
                 });
                 dialog.show();
-            } else
-            {
+            } else {
                 // request the permission to write to storage
                 requestStoragePermission();
             }
-        } else
-        {
+        } else {
             // save/share the image as permission already granted
             exportImage();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // if the permission is for writing to storage
-        if (requestCode == CanvasExporter.PERMISSION_WRITE_EXTERNAL_STORAGE)
-        {
+        if (requestCode == CanvasExporter.PERMISSION_WRITE_EXTERNAL_STORAGE) {
             // if the results are not empty and have been granted
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // save/share the drawing as an image
                 exportImage();
-            } else
-            {
+            } else {
                 // disable the buttons and save/share functionality
                 findViewById(R.id.saveButton).setEnabled(false);
                 findViewById(R.id.saveButton).setAlpha(0.5f);
@@ -310,40 +279,33 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    private void exportImage ()
-    {
-        if (canvasExporter.getExportType() == CanvasExporter.FLAG_SAVE)
-        {
+    private void exportImage() {
+        if (canvasExporter.getExportType() == CanvasExporter.FLAG_SAVE) {
             // if the user is wanting to save, attempt and return its filename
             String fileName = canvasExporter.saveImage(canvasView.getBitmap());
 
-            if (fileName != null)
-            {
+            if (fileName != null) {
                 // refresh the gallery to show the new image if it exists
                 MediaScannerConnection.scanFile(
                         DrawingActivity.this, new String[]{fileName}, null, null);
                 Toast.makeText(DrawingActivity.this, "The image was saved successfully.", Toast.LENGTH_SHORT).show();
-            } else
-            {
+            } else {
                 Toast.makeText(DrawingActivity.this, "There was an error saving the image.", Toast.LENGTH_SHORT).show();
             }
-        } else if (canvasExporter.getExportType() == CanvasExporter.FLAG_SHARE)
-        {
+        } else if (canvasExporter.getExportType() == CanvasExporter.FLAG_SHARE) {
             // handle the sharing
             shareImage();
         }
     }
 
-    private void shareImage()
-    {
+    private void shareImage() {
         // create a new intent to a sharing activity.
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // get the image as a file
         File image = canvasExporter.getImage(canvasView.getBitmap());
 
-        if (image != null)
-        {
+        if (image != null) {
             // retrieve the uri of the created file
             Uri uri = FileProvider.getUriForFile(
                     DrawingActivity.this,
@@ -353,8 +315,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnClickLi
             intent.putExtra(Intent.EXTRA_STREAM, uri).setType("image/png");
             // start the intent
             startActivity(Intent.createChooser(intent, "Share image via"));
-        } else
-        {
+        } else {
             Toast.makeText(DrawingActivity.this, "There was an error sharing the image.", Toast.LENGTH_SHORT).show();
         }
     }

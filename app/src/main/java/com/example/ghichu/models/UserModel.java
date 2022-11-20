@@ -2,13 +2,13 @@ package com.example.ghichu.models;
 
 public class UserModel {
     private Integer id;
-    private String username,password;
+    private String username, password;
 
     public UserModel() {
 
     }
 
-    public UserModel( String username, String password) {
+    public UserModel(String username, String password) {
         this.username = username;
         this.password = password;
     }

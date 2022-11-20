@@ -24,10 +24,10 @@ import java.io.ByteArrayOutputStream;
 
 public class CameraPicture extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String TAG=Manifest.class.getName();
+    public static final String TAG = Manifest.class.getName();
 
     public Uri sImage;
-    private ImageButton imageView_back, imageView_capture,imageView_save;
+    private ImageButton imageView_back, imageView_capture, imageView_save;
     private ImageView previewView;
     private FirebaseStorage storage;
 
@@ -50,21 +50,21 @@ public class CameraPicture extends AppCompatActivity implements View.OnClickList
             startActivity(i);
         });
 
-        imageView_capture.setOnClickListener(view->{
+        imageView_capture.setOnClickListener(view -> {
             Intent iCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityIfNeeded(iCamera,2002);
+            startActivityIfNeeded(iCamera, 2002);
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==2002&&resultCode==RESULT_OK){
-            Log.e(TAG,"onActivityResult");
+        if (requestCode == 2002 && resultCode == RESULT_OK) {
+            Log.e(TAG, "onActivityResult");
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,bytes);
-            String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(),bitmap,"val",null);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), bitmap, "val", null);
             sImage = Uri.parse(path);
             previewView.setImageURI(sImage);
         }
@@ -73,13 +73,13 @@ public class CameraPicture extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         int viewID = v.getId();
-        if(viewID==R.id.imageView_save){
-            if(sImage!=null){
-                Intent intent = new Intent(CameraPicture.this,NotesTakerActivity.class);
-                intent.putExtra("takePicture",String.valueOf(sImage));
+        if (viewID == R.id.imageView_save) {
+            if (sImage != null) {
+                Intent intent = new Intent(CameraPicture.this, NotesTakerActivity.class);
+                intent.putExtra("takePicture", String.valueOf(sImage));
                 startActivity(intent);
-            }else{
-                Toast.makeText(CameraPicture.this,"You haven't photographed him yet",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(CameraPicture.this, "You haven't photographed him yet", Toast.LENGTH_LONG).show();
             }
         }
     }

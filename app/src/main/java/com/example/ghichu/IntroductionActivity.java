@@ -25,7 +25,7 @@ public class IntroductionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_introduction);
 
         introImg = findViewById(R.id.bgIntro);
-        lottieAnimationView =findViewById(R.id.lottie_intro);
+        lottieAnimationView = findViewById(R.id.lottie_intro);
         textView = findViewById(R.id.textView2);
 
         introImg.animate().translationY(-2900).setDuration(1600).setStartDelay(2100);
@@ -36,10 +36,10 @@ public class IntroductionActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Intent introActive = new Intent(IntroductionActivity.this,MainActivity.class);
+                Intent introActive = new Intent(IntroductionActivity.this, MainActivity.class);
                 startActivity(introActive);
             }
-        },5000);
+        }, 5000);
     }
 
 }

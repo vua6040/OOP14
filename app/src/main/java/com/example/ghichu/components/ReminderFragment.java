@@ -17,8 +17,6 @@ public class ReminderFragment extends Fragment {
     @Override
 
 
-
-
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.activity_reminder_views, container, false);
     }
