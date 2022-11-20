@@ -116,6 +116,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                     sImage = uri;
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                        imageView_img.getLayoutParams().height=600;
                         imageView_img.setImageBitmap(bitmap);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -240,6 +241,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
                             final File file = File.createTempFile("image", "jpg");
                             storageReference.getFile(file).addOnSuccessListener(taskSnapshot -> {
                                 Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                imageView_img.getLayoutParams().height=600;
                                 imageView_img.setImageBitmap(bitmap);
                             }).addOnFailureListener(e -> Toast.makeText(NotesTakerActivity.this, "Image faild to load", Toast.LENGTH_LONG).show());
                         } catch (IOException e) {
@@ -366,6 +368,7 @@ public class NotesTakerActivity extends AppCompatActivity implements View.OnClic
             Uri pathFCamera = Uri.parse(urlStringFCamera);
             sImage = pathFCamera;
             isImgFCamera = true;
+            imageView_img.getLayoutParams().height=600;
             imageView_img.setImageURI(pathFCamera);
         }
 
