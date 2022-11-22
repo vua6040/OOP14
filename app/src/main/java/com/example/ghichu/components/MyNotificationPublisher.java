@@ -44,6 +44,7 @@ public class MyNotificationPublisher extends BroadcastReceiver {
                 .setContentText(message)
                 .setChannelId(APP_NAME)
                 .setContentIntent(resultIntent)
+                .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setStyle(new NotificationCompat.BigTextStyle()
                 .bigText(message));
